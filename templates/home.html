@@ -12,24 +12,24 @@
     <div>
         <h3>Web Page Analyzer</h3>
         <label>Enter a page URL to analyze</label>
-        <form action="/analyze" method="post">
+        <form action="/" method="post">
             <input type="text" name="targetUrl" placeholder="Enter Page URL" required>
             <button type="submit">Analyze</button>
         </form>
 
         {{if .TargetUrl}}
-            {{if .Status}}
             <h4>Analyzer results for '{{.TargetUrl}}' as follows:</h4>
-            <table>
-                <tr>
-                    <td class="thick">HTML Version: </td>
-                    <td>{{.HtmlVersion}}</td>
-                </tr>
-                <tr>
-                    <td class="thick">Page Title: </td>
-                    <td>{{.PageTitle}}</td>
-                </tr>
-            </table>
+            {{if .Status}}
+                <table>
+                    <tr>
+                        <td class="thick">HTML Version: </td>
+                        <td>{{.HtmlVersion}}</td>
+                    </tr>
+                    <tr>
+                        <td class="thick">Page Title: </td>
+                        <td>{{.PageTitle}}</td>
+                    </tr>
+                </table>
             {{else}}
                 <p style="color: red;">Error: {{.StatusMessage}}</p>
             {{end}}
