@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"net/url"
 )
@@ -43,8 +43,8 @@ func main() {
 	http.HandleFunc("/", homePageHandler)
 	http.HandleFunc("/analyze", analyzeHandler)
 
-	fmt.Println("Server started on port 8080")
-	http.ListenAndServe(":8080", nil)
+	log.Println("Server started on port 8080")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 // HomePageHandler - Returns the analyser page
@@ -59,7 +59,7 @@ func analyzeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	targetUrl := r.FormValue("targetUrl")
-	fmt.Println("Analyze request received. targetUrl:", targetUrl)
+	log.Println("Analyze request received. targetUrl:", targetUrl)
 
 	data := PageAnalysis{
 		TargetUrl:     targetUrl,
@@ -107,14 +107,14 @@ func analyzeHandler(w http.ResponseWriter, r *http.Request) {
 func renderTemplate(w http.ResponseWriter, data *PageAnalysis) {
 	tmpl, err := template.ParseFiles("templates/home.html")
 	if err != nil {
-		fmt.Println("Template parsing error:", err)
+		log.Println("Template parsing error:", err)
 		http.Error(w, "Internal server error. Please try again later!", http.StatusInternalServerError)
 		return
 	}
 
 	err = tmpl.Execute(w, data)
 	if err != nil {
-		fmt.Println("Template execution error:", err)
+		log.Println("Template execution error:", err)
 		http.Error(w, "Internal server error. Please try again later!", http.StatusInternalServerError)
 		return
 	}
