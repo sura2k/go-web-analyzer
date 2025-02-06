@@ -3,6 +3,7 @@ package analyzers
 import (
 	"go-web-analyzer/models"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -39,7 +40,7 @@ func GetLinkSummary(analyzerInfo *AnalyzerInfo) *models.Links {
 					} else {
 						// Internal link
 						links.NumOfIntLinks++
-						if !isUrlAccessible(deriveDirectUrl(href, "TODO_BASE_URL")) {
+						if !isUrlAccessible(deriveDirectUrl(href, analyzerInfo.baseUrl)) {
 							links.NumOfIntLinksInaccessible++
 						}
 					}
@@ -57,13 +58,16 @@ func GetLinkSummary(analyzerInfo *AnalyzerInfo) *models.Links {
 
 // Derive direct URL for relative URLs
 func deriveDirectUrl(relativeUrl string, baseUrl string) string {
-	//TODO
-	return relativeUrl
+	parsedBaseURL, err := url.Parse(baseUrl)
+	if err != nil {
+		return ""
+	}
+	// Resolve relative URL
+	return parsedBaseURL.ResolveReference(&url.URL{Path: relativeUrl}).String()
 }
 
 // Check if the URL is accessible
 func isUrlAccessible(url string) bool {
-	fmt.Println("Check: ", url)
 	client := &http.Client{}
 
 	resp, err := client.Get(url)
