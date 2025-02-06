@@ -46,7 +46,7 @@ func doAnalyzeHandler(w http.ResponseWriter, r *http.Request) {
 	- w: The HTTP response writer.
 	- data: A pointer to PageAnalysis struct containing analysis details. A pointer is used to minimize the effort of copying objects
 */
-func renderTemplate(w http.ResponseWriter, data *models.PageAnalysis) {
+func renderTemplate(w http.ResponseWriter, data *models.AnalysisResult) {
 	tmpl, err := template.ParseFiles("templates/home.html")
 	if err != nil {
 		log.Println("Template parsing error:", err)

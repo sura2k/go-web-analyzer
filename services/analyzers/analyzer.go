@@ -10,13 +10,13 @@ import (
 )
 
 // Returns an Empty PageAnalysis
-func GetEmptyAnalyze() *models.PageAnalysis {
-	return &models.PageAnalysis{}
+func GetEmptyAnalyze() *models.AnalysisResult {
+	return &models.AnalysisResult{}
 }
 
 // URL Analyzer Process
-func Analyze(targetUrl string) *models.PageAnalysis {
-	data := models.PageAnalysis {
+func Analyze(targetUrl string) *models.AnalysisResult {
+	data := models.AnalysisResult{
 		TargetUrl:     targetUrl,
 		Status:        true,
 		StatusMessage: "",
@@ -50,7 +50,7 @@ func Analyze(targetUrl string) *models.PageAnalysis {
 	//TODO: Actual Page Analyzer logic goes here
 	data.HtmlVersion = GetHtmlVersion(htmlDoc)
 	data.PageTitle = GetPageTitle(htmlDoc)
-	data.Headings = models.Headings {
+	data.Headings = models.Headings{
 		NumOfH1: 0,
 		NumOfH2: 0,
 		NumOfH3: 0,
@@ -58,7 +58,7 @@ func Analyze(targetUrl string) *models.PageAnalysis {
 		NumOfH5: 0,
 		NumOfH6: 0,
 	}
-	data.Links = models.Links {
+	data.Links = models.Links{
 		NumOfIntLinks:             0,
 		NumOfExtLinks:             0,
 		NumOfIntLinksInaccessible: 0,

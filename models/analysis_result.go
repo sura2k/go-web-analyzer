@@ -1,7 +1,7 @@
 package models
 
 // PageAnalysis struct for passing data to the template
-type PageAnalysis struct {
+type AnalysisResult struct {
 	TargetUrl     string
 	HtmlVersion   string
 	PageTitle     string
