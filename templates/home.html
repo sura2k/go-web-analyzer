@@ -32,13 +32,20 @@
                     <tr>
                         <td class="thick">Headings: </td>
                         <td>
-                            H1 = {{.Headings.NumOfH1}},
-                            H2 = {{.Headings.NumOfH2}},
-                            H3 = {{.Headings.NumOfH3}},
-                            H4 = {{.Headings.NumOfH4}},
-                            H5 = {{.Headings.NumOfH5}},
-                            H6 = {{.Headings.NumOfH6}}
+                            H1 = {{.Headings.NumOfH1}} </br>
+                            H2 = {{.Headings.NumOfH2}} </br>
+                            H3 = {{.Headings.NumOfH3}} </br>
+                            H4 = {{.Headings.NumOfH4}} </br>
+                            H5 = {{.Headings.NumOfH5}} </br>
+                            H6 = {{.Headings.NumOfH6}} </br>
                             (Note: This includes hidden tags as well)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="thick">Links: </td>
+                        <td>
+                            External (Inaccessible) = {{.Links.NumOfExtLinks}}({{.Links.NumOfExtLinksInaccessible}}) </br>
+                            Internal (Inaccessible) = {{.Links.NumOfIntLinks}}({{.Links.NumOfIntLinksInaccessible}}) </br>
                         </td>
                     </tr>
                 </table>
