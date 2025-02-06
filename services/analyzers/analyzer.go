@@ -48,7 +48,6 @@ func Analyze(targetUrl string) *PageAnalysis {
 		NumOfExtLinksInaccessible: 0,
 	}
 	data.HasLoginForm = true
-	data.RedirectsToLogin = false
 	data.Status = true      //TODO: If anything goes wrong while analyzing, this must be set to false
 	data.StatusMessage = "" //TODO: If anything goes wrong while analyzing, an error message should be set here
 

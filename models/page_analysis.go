@@ -2,15 +2,14 @@ package models
 
 // PageAnalysis struct for passing data to the template
 type PageAnalysis struct {
-	TargetUrl        string
-	HtmlVersion      string
-	PageTitle        string
-	Headings         Headings
-	Links            Links
-	HasLoginForm     bool
-	RedirectsToLogin bool
-	Status           bool
-	StatusMessage    string
+	TargetUrl     string
+	HtmlVersion   string
+	PageTitle     string
+	Headings      Headings
+	Links         Links
+	HasLoginForm  bool
+	Status        bool
+	StatusMessage string
 }
 
 // Headings struct to store heading count by level
