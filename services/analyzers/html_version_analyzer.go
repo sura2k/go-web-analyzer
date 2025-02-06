@@ -7,8 +7,8 @@ import (
 )
 
 // GetHtmlVersion returns the HTML version for the given htmlDoc
-func GetHtmlVersion(htmlDoc *html.Node) string {
-	doctype := htmlDoc.FirstChild
+func GetHtmlVersion(analyzerInfo *AnalyzerInfo) string {
+	doctype := analyzerInfo.htmlDoc.FirstChild
 	if doctype != nil && doctype.Type == html.DoctypeNode && strings.ToUpper(doctype.Data) == "HTML" {
 		for _, attr := range doctype.Attr {
 			if strings.ToUpper(attr.Key) == "PUBLIC" {

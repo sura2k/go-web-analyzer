@@ -7,8 +7,8 @@ import (
 )
 
 // GetPageTitle returns the page title i.e. value of <title> for the given htmlDoc
-func GetPageTitle(htmlDoc *html.Node) string {
-	head := findHeadTag(htmlDoc)
+func GetPageTitle(analyzerInfo *AnalyzerInfo) string {
+	head := findHeadTag(analyzerInfo.htmlDoc)
 	return findTitle(head)
 }
 

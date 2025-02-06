@@ -50,11 +50,24 @@ func Analyze(targetUrl string) *models.AnalysisResult {
 		return &data
 	}
 
+	baseUrl, err := getBaseURL(targetUrl)
+	if err != nil {
+		log.Println("ERROR: Unable to extract the base url:", err)
+		data.Status = false
+		data.StatusMessage = "Extracting base url failed"
+		return &data
+	}
+
+	analyzerInfo := &AnalyzerInfo{
+		baseUrl: baseUrl,
+		htmlDoc: htmlDoc,
+	}
+
 	// Populate AnalysisResult
-	data.HtmlVersion = GetHtmlVersion(htmlDoc)
-	data.PageTitle = GetPageTitle(htmlDoc)
-	data.Headings = *GetHeadingTags(htmlDoc) //Rather than letting Go to copy the data, it could be better to use a pointer
-	data.Links = *GetLinkSummary(htmlDoc)
+	data.HtmlVersion = GetHtmlVersion(analyzerInfo)
+	data.PageTitle = GetPageTitle(analyzerInfo)
+	data.Headings = *GetHeadingTags(analyzerInfo) //Rather than letting Go to copy the data, it could be better to use a pointer
+	data.Links = *GetLinkSummary(analyzerInfo)
 	data.HasLoginForm = true
 	data.Status = true      //TODO: If anything goes wrong while analyzing, this must be set to false
 	data.StatusMessage = "" //TODO: If anything goes wrong while analyzing, an error message should be set here
@@ -63,7 +76,24 @@ func Analyze(targetUrl string) *models.AnalysisResult {
 }
 
 // Check whether URL is valid
-func isValidUrl(str string) bool {
-	u, err := url.Parse(str)
+func isValidUrl(rawURL string) bool {
+	u, err := url.Parse(rawURL)
 	return err == nil && u.Scheme != "" && u.Host != ""
+}
+
+func getBaseURL(rawURL string) (string, error) {
+	parsedURL, err := url.Parse(rawURL)
+	if err != nil {
+		return "", err
+	}
+
+	// Construct base URL using scheme and host
+	baseURL := parsedURL.Scheme + "://" + parsedURL.Host
+	return baseURL, nil
+}
+
+// AnalyzerInfo struct for passing raw data to various analyzers
+type AnalyzerInfo struct {
+	baseUrl string
+	htmlDoc *html.Node
 }

@@ -1,7 +1,6 @@
 package analyzers
 
 import (
-	"fmt"
 	"go-web-analyzer/models"
 	"net/http"
 	"strings"
@@ -10,7 +9,7 @@ import (
 )
 
 // GetLinkSummary returns internal, external, inactive link counts for the given htmlDoc
-func GetLinkSummary(htmlDoc *html.Node) *models.Links {
+func GetLinkSummary(analyzerInfo *AnalyzerInfo) *models.Links {
 	links := &models.Links{}
 
 	var traverse func(*html.Node)
@@ -52,7 +51,7 @@ func GetLinkSummary(htmlDoc *html.Node) *models.Links {
 		}
 	}
 
-	traverse(htmlDoc)
+	traverse(analyzerInfo.htmlDoc)
 	return links
 }
 

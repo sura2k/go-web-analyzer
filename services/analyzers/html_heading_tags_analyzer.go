@@ -9,7 +9,7 @@ import (
 // GetHeadingTags returns heading levels and their counts for the given htmlDoc
 // Concerns:
 //   - Hidden h tags are also calculated
-func GetHeadingTags(htmlDoc *html.Node) *models.Headings {
+func GetHeadingTags(analyzerInfo *AnalyzerInfo) *models.Headings {
 	headingTags := make(map[string]int)
 
 	// Inner recursive functions MUST be declared first since it calls itself within the same context
@@ -28,7 +28,7 @@ func GetHeadingTags(htmlDoc *html.Node) *models.Headings {
 		}
 	}
 
-	traverse(htmlDoc)
+	traverse(analyzerInfo.htmlDoc)
 
 	return &models.Headings{
 		NumOfH1: headingTags["h1"], // Note: No need to check for nil since Go returns default int value i.e 0 if the key is not available
