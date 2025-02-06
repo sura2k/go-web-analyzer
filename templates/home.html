@@ -50,6 +50,12 @@
                             Non-HyperLinks = {{.Links.NumOfNonHyperLinks}} </br>
                         </td>
                     </tr>
+                    <tr>
+                        <td class="thick">Has Login: </td>
+                        <td>
+                            {{if .HasLoginForm}}Yes{{else}}No{{end}}
+                        </td>
+                    </tr>
                 </table>
             {{else}}
                 <p style="color: red;">Error: {{.StatusMessage}}</p>

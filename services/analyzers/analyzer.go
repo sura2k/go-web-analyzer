@@ -68,9 +68,7 @@ func Analyze(targetUrl string) *models.AnalysisResult {
 	data.PageTitle = GetPageTitle(analyzerInfo)
 	data.Headings = *GetHeadingTags(analyzerInfo) //Rather than letting Go to copy the data, it could be better to use a pointer
 	data.Links = *GetLinkSummary(analyzerInfo)
-	data.HasLoginForm = true
-	data.Status = true      //TODO: If anything goes wrong while analyzing, this must be set to false
-	data.StatusMessage = "" //TODO: If anything goes wrong while analyzing, an error message should be set here
+	data.HasLoginForm = HasLoginForm(analyzerInfo)
 
 	return &data
 }
