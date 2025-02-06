@@ -2,10 +2,14 @@ package analyzers
 
 import (
 	"go-web-analyzer/models"
+	"log"
+	"net/http"
 	"net/url"
+
+	"golang.org/x/net/html"
 )
 
-// Returns and Empty PageAnalysis
+// Returns an Empty PageAnalysis
 func GetEmptyAnalyze() *models.PageAnalysis {
 	return &models.PageAnalysis{}
 }
@@ -25,9 +29,27 @@ func Analyze(targetUrl string) *models.PageAnalysis {
 		return &data
 	}
 
+	//Gather page body
+	resp, err := http.Get(targetUrl)
+	if err != nil {
+		log.Println("ERROR: Fetching page failed:", err)
+		data.Status = false
+		data.StatusMessage = "Fetching page failed"
+		return &data
+	}
+	defer resp.Body.Close() //Close the resource to prevent leakages
+
+	htmlDoc, err := html.Parse(resp.Body) // Read full response body
+	if err != nil {
+		log.Println("ERROR: Reading page response body failed:", err)
+		data.Status = false
+		data.StatusMessage = "Reading page response body failed"
+		return &data
+	}
+
 	//TODO: Actual Page Analyzer logic goes here
-	data.HtmlVersion = "HTML5"
-	data.PageTitle = "Demo"
+	data.HtmlVersion = GetHtmlVersion(htmlDoc)
+	data.PageTitle = GetPageTitle(htmlDoc)
 	data.Headings = models.Headings {
 		NumOfH1: 0,
 		NumOfH2: 0,
