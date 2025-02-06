@@ -53,16 +53,7 @@ func Analyze(targetUrl string) *models.AnalysisResult {
 	// Populate AnalysisResult
 	data.HtmlVersion = GetHtmlVersion(htmlDoc)
 	data.PageTitle = GetPageTitle(htmlDoc)
-
-	headings := GetHeadingTags(htmlDoc)
-	data.Headings = models.Headings{
-		NumOfH1: headings["h1"], // Note: No need to check for nil since Go returns default int value i.e 0 if the key is not available
-		NumOfH2: headings["h2"],
-		NumOfH3: headings["h3"],
-		NumOfH4: headings["h4"],
-		NumOfH5: headings["h5"],
-		NumOfH6: headings["h6"],
-	}
+	data.Headings = *GetHeadingTags(htmlDoc) //Rather than letting Go to copy the data, it could be better to use a pointer
 
 	data.Links = models.Links{
 		NumOfIntLinks:             0,
