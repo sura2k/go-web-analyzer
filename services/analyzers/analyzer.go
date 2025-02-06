@@ -5,19 +5,14 @@ import (
 	"net/url"
 )
 
-// Local aliases for simplicity, otherwise models.PageAnalysis etc should be used
-type PageAnalysis = models.PageAnalysis
-type Headings = models.Headings
-type Links = models.Links
-
 // Returns and Empty PageAnalysis
-func GetEmptyAnalyze() *PageAnalysis {
-	return &PageAnalysis{}
+func GetEmptyAnalyze() *models.PageAnalysis {
+	return &models.PageAnalysis{}
 }
 
 // URL Analyzer Process
-func Analyze(targetUrl string) *PageAnalysis {
-	data := PageAnalysis{
+func Analyze(targetUrl string) *models.PageAnalysis {
+	data := models.PageAnalysis {
 		TargetUrl:     targetUrl,
 		Status:        true,
 		StatusMessage: "",
@@ -33,7 +28,7 @@ func Analyze(targetUrl string) *PageAnalysis {
 	//TODO: Actual Page Analyzer logic goes here
 	data.HtmlVersion = "HTML5"
 	data.PageTitle = "Demo"
-	data.Headings = Headings{
+	data.Headings = models.Headings {
 		NumOfH1: 0,
 		NumOfH2: 0,
 		NumOfH3: 0,
@@ -41,7 +36,7 @@ func Analyze(targetUrl string) *PageAnalysis {
 		NumOfH5: 0,
 		NumOfH6: 0,
 	}
-	data.Links = Links{
+	data.Links = models.Links {
 		NumOfIntLinks:             0,
 		NumOfExtLinks:             0,
 		NumOfIntLinksInaccessible: 0,
