@@ -50,17 +50,20 @@ func Analyze(targetUrl string) *models.AnalysisResult {
 		return &data
 	}
 
-	//TODO: Actual Page Analyzer logic goes here
+	// Populate AnalysisResult
 	data.HtmlVersion = GetHtmlVersion(htmlDoc)
 	data.PageTitle = GetPageTitle(htmlDoc)
+
+	headings := GetHeadingTags(htmlDoc)
 	data.Headings = models.Headings{
-		NumOfH1: 0,
-		NumOfH2: 0,
-		NumOfH3: 0,
-		NumOfH4: 0,
-		NumOfH5: 0,
-		NumOfH6: 0,
+		NumOfH1: headings["h1"], // Note: No need to check for nil since Go returns default int value i.e 0 if the key is not available
+		NumOfH2: headings["h2"],
+		NumOfH3: headings["h3"],
+		NumOfH4: headings["h4"],
+		NumOfH5: headings["h5"],
+		NumOfH6: headings["h6"],
 	}
+
 	data.Links = models.Links{
 		NumOfIntLinks:             0,
 		NumOfExtLinks:             0,

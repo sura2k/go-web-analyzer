@@ -29,6 +29,17 @@
                         <td class="thick">Page Title: </td>
                         <td>{{.PageTitle}}</td>
                     </tr>
+                    <tr>
+                        <td class="thick">Headings: </td>
+                        <td>
+                            H1 = {{.Headings.NumOfH1}},
+                            H2 = {{.Headings.NumOfH2}},
+                            H3 = {{.Headings.NumOfH3}},
+                            H4 = {{.Headings.NumOfH4}},
+                            H5 = {{.Headings.NumOfH5}},
+                            H6 = {{.Headings.NumOfH6}}
+                        </td>
+                    </tr>
                 </table>
             {{else}}
                 <p style="color: red;">Error: {{.StatusMessage}}</p>
