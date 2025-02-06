@@ -28,4 +28,6 @@ type Links struct {
 	NumOfExtLinks             int
 	NumOfIntLinksInaccessible int
 	NumOfExtLinksInaccessible int
+	NumOfEmptyLinks           int
+	NumOfNonHyperLinks        int
 }

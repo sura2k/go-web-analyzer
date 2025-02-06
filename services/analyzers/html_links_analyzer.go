@@ -24,6 +24,7 @@ func GetLinkSummary(analyzerInfo *AnalyzerInfo) *models.Links {
 
 					// Ignore empty or # links
 					if href == "" || href == "#" {
+						links.NumOfEmptyLinks++
 						return // Skip to the next element
 					}
 
@@ -36,6 +37,7 @@ func GetLinkSummary(analyzerInfo *AnalyzerInfo) *models.Links {
 						}
 					} else if strings.Contains(href, ":") {
 						// All non-hyperlinks are ignored. Ex: ftp://, mailto:
+						links.NumOfNonHyperLinks++
 						return // Skip to the next element
 					} else {
 						// Internal link
