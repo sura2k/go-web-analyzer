@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"golang.org/x/net/html"
 )
@@ -16,6 +17,8 @@ func GetEmptyAnalyze() *models.AnalysisResult {
 
 // URL Analyzer Process
 func Analyze(targetUrl string) *models.AnalysisResult {
+	targetUrl = strings.TrimSpace(targetUrl)
+
 	data := models.AnalysisResult{
 		TargetUrl:     targetUrl,
 		Status:        true,
