@@ -24,8 +24,13 @@ func GetLinkSummary(analyzerInput *models.AnalyzerInput) *models.Links {
 				if attr.Key == "href" {
 					href := attr.Val
 
-					// Ignore empty or # links
-					if href == "" || href == "#" {
+					// Ignore # links since they are valid anchors
+					if href == "#" {
+						return // Skip to the next element
+					}
+
+					// Count empty links
+					if href == "" {
 						links.EmptyLinks.Total++
 						return // Skip to the next element
 					}
