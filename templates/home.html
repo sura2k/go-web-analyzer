@@ -1,7 +1,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Web Page Analyzer</title>
+    <title>Go Web Page Analyzer</title>
     <style>
         table, td {
             border: 1px solid;
@@ -13,18 +13,22 @@
     </style>
 </head>
 <body>
-    <div>
-        <h3>Web Page Analyzer</h3>
+    <div style="text-align: center;">
+        <h3>Go Web Page Analyzer</h3>
         <label>Enter a Page URL to Analyze</label>
         <form action="/" method="post">
-            <input type="text" name="targetUrl" placeholder="Enter Page URL" required>
-            <button type="submit">Analyze</button>
+            <input style="width: 600px" type="text" name="targetUrl" placeholder="Enter Page URL to Analyze" required> </br>
+            <button style="margin-top: 10px;" type="submit">Analyze</button>
         </form>
 
         {{if .TargetUrl}}
-            <h4>Analyzer results for '{{.TargetUrl}}' as follows:</h4>
+            <h4>Analyzer results as follows:</h4>
             {{if .Status}}
-                <table>
+                <table style="margin-left: auto; margin-right: auto; width: 600px">
+                    <tr>
+                        <td class="thick">URL </td>
+                        <td>{{.TargetUrl}}</td>
+                    </tr>
                     <tr>
                         <td class="thick">HTML Version </td>
                         <td>{{.HtmlVersion}}</td>
@@ -67,7 +71,8 @@
                     </tr>
                 </table>
             {{else}}
-                <p style="color: red;">Error: {{.StatusMessage}}</p>
+                <b>Error: </b>
+                <p style="color: red;">{{.Message}}</p>
             {{end}}
         {{end}}
     </div>
