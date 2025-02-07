@@ -2,14 +2,28 @@ package analyzers
 
 import (
 	"go-web-analyzer/models"
+	"log"
 
 	"golang.org/x/net/html"
 )
 
+// HeadingTagsAnalyzer struct
+type HeadingTagsAnalyzer struct{}
+
+// Analyze method updates the relevant field
+func (a HeadingTagsAnalyzer) Analyze(analyzerInput *models.AnalyzerInput, arm *AnalyzerResultManager) {
+	log.Println("HeadingTagsAnalyzer: Started")
+
+	headings := getHeadingTags(analyzerInput)
+	arm.SetHeadings(headings)
+
+	log.Println("HeadingTagsAnalyzer: Completed")
+}
+
 // Analyze and return heading levels and their counts
 // Assumptions:
 //   - Hidden h tags are also considered
-func GetHeadingTags(analyzerInput *models.AnalyzerInput) *models.Headings {
+func getHeadingTags(analyzerInput *models.AnalyzerInput) *models.Headings {
 	headingTags := make(map[string]int)
 
 	// Inner recursive functions MUST be declared first since it calls itself within the same context

@@ -2,13 +2,27 @@ package analyzers
 
 import (
 	"go-web-analyzer/models"
+	"log"
 	"strings"
 
 	"golang.org/x/net/html"
 )
 
+// PageTitleAnalyzer struct
+type PageTitleAnalyzer struct{}
+
+// Analyze method updates the relevant field
+func (a PageTitleAnalyzer) Analyze(analyzerInput *models.AnalyzerInput, arm *AnalyzerResultManager) {
+	log.Println("PageTitleAnalyzer: Started")
+
+	pageTitle := getPageTitle(analyzerInput)
+	arm.SetPageTitle(pageTitle)
+
+	log.Println("PageTitleAnalyzer: Completed")
+}
+
 // Analyze and return the page title - i.e. value of <title>
-func GetPageTitle(analyzerInput *models.AnalyzerInput) string {
+func getPageTitle(analyzerInput *models.AnalyzerInput) string {
 	head := findHeadTag(analyzerInput.HtmlDoc)
 	return findTitle(head)
 }

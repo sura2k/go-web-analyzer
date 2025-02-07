@@ -34,9 +34,12 @@ func postAnalyzerViewHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	targetUrl := r.FormValue("targetUrl")
-	log.Println("Analyze request received. targetUrl:", targetUrl)
+	log.Println("AnalyzerViewHandler: Analyze request received. targetUrl:", targetUrl)
 
-	analyzerResult, err := analyzers.StartAnalyzer(targetUrl)
+	// Execute Analyzers
+	analyzerManager := analyzers.NewAnalyzerManager(targetUrl)
+	analyzerResult, err := analyzerManager.ExecuteAnalyzers()
+
 	analyzerResponse := &models.AnalyzerResponse{Processed: true}
 	if err != nil {
 		analyzerResponse.Status = false

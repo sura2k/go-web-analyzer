@@ -2,15 +2,29 @@ package analyzers
 
 import (
 	"go-web-analyzer/models"
+	"log"
 	"strings"
 
 	"golang.org/x/net/html"
 )
 
+// HtmlVersionAnalyzer struct
+type HtmlVersionAnalyzer struct{}
+
+// Analyze method updates the relevant field
+func (a HtmlVersionAnalyzer) Analyze(analyzerInput *models.AnalyzerInput, arm *AnalyzerResultManager) {
+	log.Println("HtmlVersionAnalyzer: Started")
+
+	htmlVersion := getHtmlVersion(analyzerInput)
+	arm.SetHtmlVersion(htmlVersion)
+
+	log.Println("HtmlVersionAnalyzer: Completed")
+}
+
 // Analyze and returns the HTML version using <!DOCTYPE> element
 // Assumptions
 //   - Assumes as HTML5, if no <!DOCTYPE> element is presented
-func GetHtmlVersion(analyzerInput *models.AnalyzerInput) string {
+func getHtmlVersion(analyzerInput *models.AnalyzerInput) string {
 	doctype := analyzerInput.HtmlDoc.FirstChild
 	if doctype != nil && doctype.Type == html.DoctypeNode && strings.ToUpper(doctype.Data) == "HTML" {
 		for _, attr := range doctype.Attr {

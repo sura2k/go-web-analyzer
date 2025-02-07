@@ -4,15 +4,28 @@ import (
 	"fmt"
 	"go-web-analyzer/models"
 	"go-web-analyzer/services/utils"
+	"log"
 	"net/http"
 	"strings"
 
 	"golang.org/x/net/html"
 )
 
-// Evaluates some basic validations and populate AnalyzerInput
-func PreprocessInput(targetUrl string) (*models.AnalyzerInput, error) {
-	targetUrl = strings.TrimSpace(targetUrl)
+// AnalyzerPreprocessor runs few vaidations and returns AnalyzerInput
+type AnalyzerPreprocessor struct {
+	targetUrl string
+}
+
+// NewAnalyzerPreprocessor initializes the AnalyzerPreprocessor with targetUrl
+func NewAnalyzerPreprocessor(targetUrl string) *AnalyzerPreprocessor {
+	return &AnalyzerPreprocessor{targetUrl: targetUrl}
+}
+
+// ExecutePreprocessor evaluates some basic validations and populate AnalyzerInput
+func (aPreproc *AnalyzerPreprocessor) ExecutePreprocessor() (*models.AnalyzerInput, error) {
+	log.Println("AnalyzerPreprocessor: Input preprocessing started")
+
+	targetUrl := strings.TrimSpace(aPreproc.targetUrl)
 
 	// If url is not vaid, immediately return with an error message
 	_, err := utils.IsValidUrl(targetUrl)
@@ -39,6 +52,8 @@ func PreprocessInput(targetUrl string) (*models.AnalyzerInput, error) {
 	if err != nil {
 		return nil, fmt.Errorf("deriving base url failed. error: %w", err)
 	}
+
+	log.Println("AnalyzerPreprocessor: Input preprocessing completed")
 
 	return &models.AnalyzerInput{
 		TargetUrl: targetUrl,

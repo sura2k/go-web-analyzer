@@ -2,9 +2,23 @@ package analyzers
 
 import (
 	"go-web-analyzer/models"
+	"log"
 
 	"golang.org/x/net/html"
 )
+
+// LoginFormAnalyzer struct
+type LoginFormAnalyzer struct{}
+
+// Analyze method updates the relevant field
+func (a LoginFormAnalyzer) Analyze(analyzerInput *models.AnalyzerInput, arm *AnalyzerResultManager) {
+	log.Println("LoginFormAnalyzer: Started")
+
+	hasLoginForm := hasLoginForm(analyzerInput)
+	arm.SetHasLoginForm(hasLoginForm)
+
+	log.Println("LoginFormAnalyzer: Completed")
+}
 
 // Analyze and returns whether a login form is available
 // This function assumes that if the following conditions are true, then HTML page has a login form
@@ -15,7 +29,7 @@ import (
 //
 // Assumptions
 //   - Considered hidden login form is valid login form
-func HasLoginForm(analyzerInput *models.AnalyzerInput) bool {
+func hasLoginForm(analyzerInput *models.AnalyzerInput) bool {
 
 	// Recursive function whcih traverse through document tree
 	var traverse func(*html.Node) bool

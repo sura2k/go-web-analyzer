@@ -2,6 +2,7 @@ package analyzers
 
 import (
 	"go-web-analyzer/models"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -9,10 +10,23 @@ import (
 	"golang.org/x/net/html"
 )
 
+// LinksAnalyzer struct
+type LinksAnalyzer struct{}
+
+// Analyze method updates the relevant field
+func (a LinksAnalyzer) Analyze(analyzerInput *models.AnalyzerInput, arm *AnalyzerResultManager) {
+	log.Println("LinksAnalyzer: Started")
+
+	links := getLinkDetails(analyzerInput)
+	arm.SetLinks(links)
+
+	log.Println("LinksAnalyzer: Completed")
+}
+
 // Analyze and return internal, external and inactive link counts
 // Assumptions:
 //   - Hidden <a> tags are also considered
-func GetLinkSummary(analyzerInput *models.AnalyzerInput) *models.Links {
+func getLinkDetails(analyzerInput *models.AnalyzerInput) *models.Links {
 	links := &models.Links{}
 
 	var traverse func(*html.Node)
