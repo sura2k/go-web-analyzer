@@ -14,38 +14,36 @@
 </head>
 <body>
     <div style="text-align: center;">
-        <h3>Go Web Page Analyzer</h3>
-        <label>Enter a Page URL to Analyze</label>
+        <h2>Go Web Page Analyzer</h2>
         <form action="/" method="post">
             <input style="width: 600px" type="text" name="targetUrl" placeholder="Enter Page URL to Analyze" required> </br>
             <button style="margin-top: 10px;" type="submit">Analyze</button>
         </form>
-
-        {{if .TargetUrl}}
-            <h4>Analyzer results as follows:</h4>
+        {{if .Processed}}
             {{if .Status}}
+                <h4>Analyzer results as follows:</h4>
                 <table style="margin-left: auto; margin-right: auto; width: 600px">
                     <tr>
                         <td class="thick">URL </td>
-                        <td>{{.TargetUrl}}</td>
+                        <td>{{.Data.TargetUrl}}</td>
                     </tr>
                     <tr>
                         <td class="thick">HTML Version </td>
-                        <td>{{.HtmlVersion}}</td>
+                        <td>{{.Data.HtmlVersion}}</td>
                     </tr>
                     <tr>
                         <td class="thick">Page Title </td>
-                        <td>{{.PageTitle}}</td>
+                        <td>{{.Data.PageTitle}}</td>
                     </tr>
                     <tr>
                         <td class="thick">Headings </td>
                         <td>
-                            H1 = {{.Headings.H1Count}} </br>
-                            H2 = {{.Headings.H2Count}} </br>
-                            H3 = {{.Headings.H3Count}} </br>
-                            H4 = {{.Headings.H4Count}} </br>
-                            H5 = {{.Headings.H5Count}} </br>
-                            H6 = {{.Headings.H6Count}} </br>
+                            H1 = {{.Data.Headings.H1Count}} </br>
+                            H2 = {{.Data.Headings.H2Count}} </br>
+                            H3 = {{.Data.Headings.H3Count}} </br>
+                            H4 = {{.Data.Headings.H4Count}} </br>
+                            H5 = {{.Data.Headings.H5Count}} </br>
+                            H6 = {{.Data.Headings.H6Count}} </br>
                             </br>
                             <i>Note: This includes hidden tags as well</i>
                         </td>
@@ -53,12 +51,12 @@
                     <tr>
                         <td class="thick">Links </td>
                         <td>
-                            External = {{.Links.External.Total}} </br>
-                            External Inaccessible = {{.Links.External.Inaccessible}} </br>
-                            Internal = {{.Links.Internal.Total}} </br>
-                            Internal Inaccessible = {{.Links.Internal.Inaccessible}} </br>
-                            Empty Links = {{.Links.EmptyLinks.Total}} </br>
-                            Non-HyperLinks = {{.Links.NonHyperLinks.Total}} (i.e. ftp://, mailto:, etc)</br>
+                            External = {{.Data.Links.External.Total}} </br>
+                            External Inaccessible = {{.Data.Links.External.Inaccessible}} </br>
+                            Internal = {{.Data.Links.Internal.Total}} </br>
+                            Internal Inaccessible = {{.Data.Links.Internal.Inaccessible}} </br>
+                            Empty Links = {{.Data.Links.EmptyLinks.Total}} </br>
+                            Non-HyperLinks = {{.Data.Links.NonHyperLinks.Total}} (i.e. ftp://, mailto:, etc)</br>
                             </br>
                             <i>Note: This includes hidden links as well</i>
                         </td>
@@ -66,7 +64,7 @@
                     <tr>
                         <td class="thick">Has Login </td>
                         <td>
-                            {{if .HasLoginForm}}Yes{{else}}No{{end}}
+                            {{if .Data.HasLoginForm}}Yes{{else}}No{{end}}
                         </td>
                     </tr>
                 </table>

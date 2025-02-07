@@ -2,14 +2,12 @@ package models
 
 // Main AnalyzerResult struct
 type AnalyzerResult struct {
-	TargetUrl     string
-	HtmlVersion   string
-	PageTitle     string
-	Headings      Headings
-	Links         Links
-	HasLoginForm  bool
-	Status        bool
-	StatusMessage string
+	TargetUrl    string
+	HtmlVersion  string
+	PageTitle    string
+	Headings     Headings
+	Links        Links
+	HasLoginForm bool
 }
 
 // Headings struct to store heading count by level
