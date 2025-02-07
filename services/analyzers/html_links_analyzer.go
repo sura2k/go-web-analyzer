@@ -2,9 +2,8 @@ package analyzers
 
 import (
 	"go-web-analyzer/models"
+	"go-web-analyzer/services/utils"
 	"log"
-	"net/http"
-	"net/url"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -53,7 +52,7 @@ func getLinkDetails(analyzerInput *models.AnalyzerInput) *models.Links {
 					if strings.HasPrefix(href, "http://") || strings.HasPrefix(href, "https://") || strings.HasPrefix(href, "//") {
 						// External link
 						links.External.Total++
-						if !isUrlAccessible(href) {
+						if !utils.IsUrlAccessible(href) {
 							links.External.Inaccessible++
 						}
 					} else if strings.Contains(href, ":") {
@@ -63,7 +62,7 @@ func getLinkDetails(analyzerInput *models.AnalyzerInput) *models.Links {
 					} else {
 						// Internal link
 						links.Internal.Total++
-						if !isUrlAccessible(deriveDirectUrl(href, analyzerInput.BaseUrl)) {
+						if !utils.IsUrlAccessible(utils.DeriveDirectUrl(href, analyzerInput.BaseUrl)) {
 							links.Internal.Inaccessible++
 						}
 					}
@@ -77,32 +76,4 @@ func getLinkDetails(analyzerInput *models.AnalyzerInput) *models.Links {
 
 	traverse(analyzerInput.HtmlDoc)
 	return links
-}
-
-// Derive direct url for relative urls
-func deriveDirectUrl(relativeUrl string, baseUrl string) string {
-	parsedBaseUrl, err := url.Parse(baseUrl)
-	if err != nil {
-		return ""
-	}
-	// Resolve relative url
-	return parsedBaseUrl.ResolveReference(&url.URL{Path: relativeUrl}).String()
-}
-
-// Check if the url is accessible - whether returns HTTP 2xx
-func isUrlAccessible(url string) bool {
-	client := &http.Client{}
-
-	resp, err := client.Get(url)
-	if err != nil {
-		return false
-	}
-	defer resp.Body.Close()
-
-	// Check the response status code is 2xx
-	if resp.StatusCode/100 == 2 {
-		return true
-	} else {
-		return false
-	}
 }
