@@ -9,8 +9,10 @@ import (
 	"golang.org/x/net/html"
 )
 
-// GetLinkSummary returns internal, external, inactive link counts for the given htmlDoc
-func GetLinkSummary(analyzerInfo *AnalyzerInfo) *models.Links {
+// Analyze and return internal, external and inactive link counts
+// Assumptions:
+//   - Hidden <a> tags are also considered
+func GetLinkSummary(analyzerInput *models.AnalyzerInput) *models.Links {
 	links := &models.Links{}
 
 	var traverse func(*html.Node)
@@ -24,26 +26,26 @@ func GetLinkSummary(analyzerInfo *AnalyzerInfo) *models.Links {
 
 					// Ignore empty or # links
 					if href == "" || href == "#" {
-						links.NumOfEmptyLinks++
+						links.EmptyLinks.Total++
 						return // Skip to the next element
 					}
 
 					// Assumes if the href starts with "http://", "https://" or "//" are external links
 					if strings.HasPrefix(href, "http://") || strings.HasPrefix(href, "https://") || strings.HasPrefix(href, "//") {
 						// External link
-						links.NumOfExtLinks++
+						links.External.Total++
 						if !isUrlAccessible(href) {
-							links.NumOfExtLinksInaccessible++
+							links.External.Inaccessible++
 						}
 					} else if strings.Contains(href, ":") {
 						// All non-hyperlinks are ignored. Ex: ftp://, mailto:
-						links.NumOfNonHyperLinks++
+						links.NonHyperLinks.Total++
 						return // Skip to the next element
 					} else {
 						// Internal link
-						links.NumOfIntLinks++
-						if !isUrlAccessible(deriveDirectUrl(href, analyzerInfo.baseUrl)) {
-							links.NumOfIntLinksInaccessible++
+						links.Internal.Total++
+						if !isUrlAccessible(deriveDirectUrl(href, analyzerInput.BaseUrl)) {
+							links.Internal.Inaccessible++
 						}
 					}
 				}
@@ -54,21 +56,21 @@ func GetLinkSummary(analyzerInfo *AnalyzerInfo) *models.Links {
 		}
 	}
 
-	traverse(analyzerInfo.htmlDoc)
+	traverse(analyzerInput.HtmlDoc)
 	return links
 }
 
-// Derive direct URL for relative URLs
+// Derive direct url for relative urls
 func deriveDirectUrl(relativeUrl string, baseUrl string) string {
-	parsedBaseURL, err := url.Parse(baseUrl)
+	parsedBaseUrl, err := url.Parse(baseUrl)
 	if err != nil {
 		return ""
 	}
-	// Resolve relative URL
-	return parsedBaseURL.ResolveReference(&url.URL{Path: relativeUrl}).String()
+	// Resolve relative url
+	return parsedBaseUrl.ResolveReference(&url.URL{Path: relativeUrl}).String()
 }
 
-// Check if the URL is accessible
+// Check if the url is accessible - whether returns HTTP 2xx
 func isUrlAccessible(url string) bool {
 	client := &http.Client{}
 

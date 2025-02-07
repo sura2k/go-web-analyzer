@@ -3,6 +3,10 @@
     <meta charset="UTF-8">
     <title>Web Page Analyzer</title>
     <style>
+        table, td {
+            border: 1px solid;
+            border-collapse: collapse;
+        }
         td.thick {
             font-weight: bold;
         }
@@ -11,7 +15,7 @@
 <body>
     <div>
         <h3>Web Page Analyzer</h3>
-        <label>Enter a page URL to analyze</label>
+        <label>Enter a Page URL to Analyze</label>
         <form action="/" method="post">
             <input type="text" name="targetUrl" placeholder="Enter Page URL" required>
             <button type="submit">Analyze</button>
@@ -22,36 +26,41 @@
             {{if .Status}}
                 <table>
                     <tr>
-                        <td class="thick">HTML Version: </td>
+                        <td class="thick">HTML Version </td>
                         <td>{{.HtmlVersion}}</td>
                     </tr>
                     <tr>
-                        <td class="thick">Page Title: </td>
+                        <td class="thick">Page Title </td>
                         <td>{{.PageTitle}}</td>
                     </tr>
                     <tr>
-                        <td class="thick">Headings: </td>
+                        <td class="thick">Headings </td>
                         <td>
-                            H1 = {{.Headings.NumOfH1}} </br>
-                            H2 = {{.Headings.NumOfH2}} </br>
-                            H3 = {{.Headings.NumOfH3}} </br>
-                            H4 = {{.Headings.NumOfH4}} </br>
-                            H5 = {{.Headings.NumOfH5}} </br>
-                            H6 = {{.Headings.NumOfH6}} </br>
-                            (Note: This includes hidden tags as well)
+                            H1 = {{.Headings.H1Count}} </br>
+                            H2 = {{.Headings.H2Count}} </br>
+                            H3 = {{.Headings.H3Count}} </br>
+                            H4 = {{.Headings.H4Count}} </br>
+                            H5 = {{.Headings.H5Count}} </br>
+                            H6 = {{.Headings.H6Count}} </br>
+                            </br>
+                            <i>Note: This includes hidden tags as well</i>
                         </td>
                     </tr>
                     <tr>
-                        <td class="thick">Links: </td>
+                        <td class="thick">Links </td>
                         <td>
-                            External (Inaccessible) = {{.Links.NumOfExtLinks}}({{.Links.NumOfExtLinksInaccessible}}) </br>
-                            Internal (Inaccessible) = {{.Links.NumOfIntLinks}}({{.Links.NumOfIntLinksInaccessible}}) </br>
-                            Empty Links = {{.Links.NumOfEmptyLinks}} </br>
-                            Non-HyperLinks = {{.Links.NumOfNonHyperLinks}} </br>
+                            External = {{.Links.External.Total}} </br>
+                            External Inaccessible = {{.Links.External.Inaccessible}} </br>
+                            Internal = {{.Links.Internal.Total}} </br>
+                            Internal Inaccessible = {{.Links.Internal.Inaccessible}} </br>
+                            Empty Links = {{.Links.EmptyLinks.Total}} </br>
+                            Non-HyperLinks = {{.Links.NonHyperLinks.Total}} (i.e. ftp://, mailto:, etc)</br>
+                            </br>
+                            <i>Note: This includes hidden links as well</i>
                         </td>
                     </tr>
                     <tr>
-                        <td class="thick">Has Login: </td>
+                        <td class="thick">Has Login </td>
                         <td>
                             {{if .HasLoginForm}}Yes{{else}}No{{end}}
                         </td>

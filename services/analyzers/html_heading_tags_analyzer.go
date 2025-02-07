@@ -6,10 +6,10 @@ import (
 	"golang.org/x/net/html"
 )
 
-// GetHeadingTags returns heading levels and their counts for the given htmlDoc
-// Concerns:
-//   - Hidden h tags are also calculated
-func GetHeadingTags(analyzerInfo *AnalyzerInfo) *models.Headings {
+// Analyze and return heading levels and their counts
+// Assumptions:
+//   - Hidden h tags are also considered
+func GetHeadingTags(analyzerInput *models.AnalyzerInput) *models.Headings {
 	headingTags := make(map[string]int)
 
 	// Inner recursive functions MUST be declared first since it calls itself within the same context
@@ -28,14 +28,14 @@ func GetHeadingTags(analyzerInfo *AnalyzerInfo) *models.Headings {
 		}
 	}
 
-	traverse(analyzerInfo.htmlDoc)
+	traverse(analyzerInput.HtmlDoc)
 
 	return &models.Headings{
-		NumOfH1: headingTags["h1"], // Note: No need to check for nil since Go returns default int value i.e 0 if the key is not available
-		NumOfH2: headingTags["h2"],
-		NumOfH3: headingTags["h3"],
-		NumOfH4: headingTags["h4"],
-		NumOfH5: headingTags["h5"],
-		NumOfH6: headingTags["h6"],
+		H1Count: headingTags["h1"], // Note: No need to check for nil since Go returns default int value i.e 0 if the key is not available
+		H2Count: headingTags["h2"],
+		H3Count: headingTags["h3"],
+		H4Count: headingTags["h4"],
+		H5Count: headingTags["h5"],
+		H6Count: headingTags["h6"],
 	}
 }

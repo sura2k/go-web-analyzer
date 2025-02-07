@@ -8,7 +8,7 @@ import (
 
 func main() {
 	//Handler Mappings
-	http.HandleFunc("/", view.AnalyzerHandler)
+	http.HandleFunc("/", view.AnalyzerViewHandler)
 
 	log.Println("Server started on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))

@@ -1,18 +1,19 @@
 package analyzers
 
 import (
+	"go-web-analyzer/models"
 	"strings"
 
 	"golang.org/x/net/html"
 )
 
-// GetPageTitle returns the page title i.e. value of <title> for the given htmlDoc
-func GetPageTitle(analyzerInfo *AnalyzerInfo) string {
-	head := findHeadTag(analyzerInfo.htmlDoc)
+// Analyze and return the page title - i.e. value of <title>
+func GetPageTitle(analyzerInput *models.AnalyzerInput) string {
+	head := findHeadTag(analyzerInput.HtmlDoc)
 	return findTitle(head)
 }
 
-// Finds the <head> element in the HTML document
+// Find the <head> element
 func findHeadTag(htmlDoc *html.Node) *html.Node {
 	if htmlDoc.Type == html.ElementNode && htmlDoc.Data == "head" {
 		return htmlDoc
@@ -26,7 +27,7 @@ func findHeadTag(htmlDoc *html.Node) *html.Node {
 	return nil
 }
 
-// Finds the <title> element inside the <head> tag and return the value
+// Finds the <title> element inside the provided tag (i.e. <head> is expected) and return the <title> value
 func findTitle(head *html.Node) string {
 	if head == nil {
 		return ""

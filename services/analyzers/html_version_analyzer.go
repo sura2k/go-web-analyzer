@@ -1,14 +1,17 @@
 package analyzers
 
 import (
+	"go-web-analyzer/models"
 	"strings"
 
 	"golang.org/x/net/html"
 )
 
-// GetHtmlVersion returns the HTML version for the given htmlDoc
-func GetHtmlVersion(analyzerInfo *AnalyzerInfo) string {
-	doctype := analyzerInfo.htmlDoc.FirstChild
+// Analyze and returns the HTML version using <!DOCTYPE> element
+// Assumptions
+//   - Assumes as HTML5, if no <!DOCTYPE> element is presented
+func GetHtmlVersion(analyzerInput *models.AnalyzerInput) string {
+	doctype := analyzerInput.HtmlDoc.FirstChild
 	if doctype != nil && doctype.Type == html.DoctypeNode && strings.ToUpper(doctype.Data) == "HTML" {
 		for _, attr := range doctype.Attr {
 			if strings.ToUpper(attr.Key) == "PUBLIC" {
@@ -33,9 +36,10 @@ func GetHtmlVersion(analyzerInfo *AnalyzerInfo) string {
 			}
 		}
 
-		//Assumes as HTML5 if no attributes are presented
+		//Assumes as HTML5, if no attributes are presented
 		return "HTML5"
 	}
 
-	return "Not Found"
+	//Assumes as HTML5, if no <!DOCTYPE> element is presented
+	return "HTML5"
 }

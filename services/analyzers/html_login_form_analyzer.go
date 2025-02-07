@@ -1,16 +1,21 @@
 package analyzers
 
 import (
+	"go-web-analyzer/models"
+
 	"golang.org/x/net/html"
 )
 
-// Returns whether give htmlDoc contains a login form
+// Analyze and returns whether a login form is available
 // This function assumes that if the following conditions are true, then HTML page has a login form
 //   - <form> element
 //   - <input type="password"> inside the same <form>
 //   - <input type="text"> or <input type="email"> inside the same <form>
 //   - <button type="submit"> or <input type="submit"> inside the same <form>
-func HasLoginForm(analyzerInfo *AnalyzerInfo) bool {
+//
+// Assumptions
+//   - Considered hidden login form is valid login form
+func HasLoginForm(analyzerInput *models.AnalyzerInput) bool {
 
 	// Recursive function whcih traverse through document tree
 	var traverse func(*html.Node) bool
@@ -43,7 +48,7 @@ func HasLoginForm(analyzerInfo *AnalyzerInfo) bool {
 					}
 				}
 
-				// Once all the necessary form-login elements are found,
+				// Once all the necessary login form elements are found inside a <form>,
 				// no need further recursions, return immediate with true
 				if hasInputPassword && hasInputText && hasSubmit {
 					return true
@@ -55,10 +60,10 @@ func HasLoginForm(analyzerInfo *AnalyzerInfo) bool {
 						return true
 					}
 				}
-				return false // If form-login elements are not found, returns false otherwise
+				return false // Otherwise return false, if the login-form elements are not found in a <form>
 			}
 
-			//Start the traversing through <form> children once <form> is detected
+			//Start the traversing through <form> children till a <form> is detected
 			if traverseFormElem(node) {
 				return true
 			}
@@ -66,8 +71,9 @@ func HasLoginForm(analyzerInfo *AnalyzerInfo) bool {
 
 		// Loop through the document tree
 		// Note:
-		//		If the root is <!doctype>, then loop will skip for the <!doctype>
-		// 		since there are no child elements in <!doctype>
+		//		If the root is <!DOCTYPE>, then recursive travel will skip in the 2nd attempt
+		// 		since there are no child elements in <!DOCTYPE>
+		//		Then it will start the recursive travel starting from <html>
 		for elem := node.FirstChild; elem != nil; elem = elem.NextSibling {
 			if traverse(elem) {
 				return true
@@ -77,5 +83,5 @@ func HasLoginForm(analyzerInfo *AnalyzerInfo) bool {
 	}
 
 	//Start traversing from the root
-	return traverse(analyzerInfo.htmlDoc)
+	return traverse(analyzerInput.HtmlDoc)
 }
