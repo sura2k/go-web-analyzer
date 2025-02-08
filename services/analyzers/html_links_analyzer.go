@@ -26,6 +26,7 @@ func (a LinksAnalyzer) Analyze(analyzerInput *models.AnalyzerInput, arm *Analyze
 // Analyze and return internal, external and inactive link counts
 // Assumptions:
 //   - Hidden <a> tags are also considered
+//   - Duplicate links can be ignored
 func getLinkDetails(analyzerInput *models.AnalyzerInput) *models.Links {
 	links := &models.Links{}
 	linkMap := make(map[string]bool) // For tracking purpose
@@ -53,17 +54,23 @@ func getLinkDetails(analyzerInput *models.AnalyzerInput) *models.Links {
 					// Assumes if the href starts with "http://", "https://" or "//" are external links
 					if strings.HasPrefix(href, "http://") || strings.HasPrefix(href, "https://") || strings.HasPrefix(href, "//") {
 						// External link
-						links.External.Total++
-						linkMap[href] = true
+						_, alreadyFound := linkMap[href]
+						if !alreadyFound {
+							links.External.Total++
+							linkMap[href] = true
+						}
 					} else if strings.Contains(href, ":") {
 						// All non-hyperlinks are ignored. Ex: ftp://, mailto:
 						links.NonHyperLinks.Total++
 						return // Skip to the next element
 					} else {
 						// Internal link
-						links.Internal.Total++
 						directUrl := utils.DeriveDirectUrl(href, analyzerInput.BaseUrl)
-						linkMap[directUrl] = false
+						_, alreadyFound := linkMap[directUrl]
+						if !alreadyFound {
+							links.Internal.Total++
+							linkMap[directUrl] = false
+						}
 					}
 				}
 			}
