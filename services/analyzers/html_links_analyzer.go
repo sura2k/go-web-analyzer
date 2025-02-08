@@ -4,6 +4,8 @@ import (
 	"go-web-analyzer/models"
 	"go-web-analyzer/services/utils"
 	"log"
+	"maps"
+	"slices"
 	"strings"
 	"sync"
 
@@ -106,42 +108,59 @@ func getLinkDetails(analyzerInput *models.AnalyzerInput) *models.Links {
 //
 //	Execute links in batches
 func startLinkHealthChecker(linkMap map[string]bool, links *models.Links) {
-	log.Println("LinkHealthChecker: Started. numOfLinks: ", len(linkMap))
+	// Max number of threads getting executed parally at a time
+	batchSize := 10
 
-	var lock sync.Mutex
-	var wg sync.WaitGroup
+	log.Println("LinkHealthChecker: Started. batchSize: ", batchSize, ", numOfLinks: ", len(linkMap))
 
-	// Start goroutines
-	for key, val := range linkMap {
-		wg.Add(1) // IMPORTANT: No issues even if increment the task count here since wg.Wait() will not be executed till the loop is completed
-		go func(url string, isExternal bool) {
-			defer wg.Done()
-
-			// Check accessibility of the url
-			// Note:
-			//	This takes considerable amount of time to return and
-			//	thats why additional goroutine is used to increase performance
-			isAccessible := utils.IsUrlAccessible(url)
-
-			// Lock
-			lock.Lock()
-
-			// Update the unsafe shared Links struct
-			if !isAccessible {
-				if isExternal {
-					links.External.Inaccessible++
-				} else {
-					links.Internal.Inaccessible++
-				}
-			}
-
-			// Unlock
-			lock.Unlock()
-		}(key, val)
+	// Prepare batches upfront based on batchSize
+	var linkBatches [][]string
+	linkList := slices.Collect(maps.Keys(linkMap))
+	for linkBatch := range slices.Chunk(linkList, batchSize) {
+		linkBatches = append(linkBatches, linkBatch)
 	}
+	batches := len(linkBatches)
 
-	// Blocks the main thread until all goroutines are completed
-	wg.Wait()
+	// Start batches of goroutines
+	for batchIdx, linkBatch := range linkBatches {
+		log.Println("LinkHealthChecker: Batch ", (batchIdx + 1), "/", batches, " started")
+
+		var lock sync.Mutex
+		var wg sync.WaitGroup
+
+		// Start goroutines
+		for _, urlLink := range linkBatch {
+			wg.Add(1) // IMPORTANT: No issues even if increment the task count here since wg.Wait() will not be executed till the loop is completed
+			go func(url string, isExternal bool) {
+				defer wg.Done()
+
+				// Check accessibility of the url
+				// Note:
+				//	This takes considerable amount of time to return and
+				//	thats why additional goroutine is used to increase performance
+				isAccessible := utils.IsUrlAccessible(url)
+
+				// Lock
+				lock.Lock()
+
+				// Update the unsafe shared Links struct
+				if !isAccessible {
+					if isExternal {
+						links.External.Inaccessible++
+					} else {
+						links.Internal.Inaccessible++
+					}
+				}
+
+				// Unlock
+				lock.Unlock()
+			}(urlLink, linkMap[urlLink])
+		}
+
+		// Blocks the main thread until all goroutines are completed
+		wg.Wait()
+	}
+	// All batches completed
 
 	log.Println("LinkHealthChecker: Completed")
 }
