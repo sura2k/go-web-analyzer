@@ -1,11 +1,12 @@
 package analyzers
 
 import (
+	"context"
 	"fmt"
 	"log"
-	"net/http"
 	"strings"
 
+	"github.com/chromedp/chromedp"
 	"github.com/sura2k/go-web-analyzer/models"
 	"github.com/sura2k/go-web-analyzer/services/utils"
 
@@ -34,21 +35,28 @@ func (aPreproc *AnalyzerPreprocessor) ExecutePreprocessor() (*models.AnalyzerInp
 		return nil, fmt.Errorf("invalid url. error: %w", err)
 	}
 
-	// Execute HTTP GET on the url
-	resp, err := http.Get(targetUrl)
+	// Connect to the url using chromedp
+	ctx, cancel := chromedp.NewContext(context.Background())
+	defer cancel()
+
+	var doctype, htmlContent string
+
+	err = chromedp.Run(ctx,
+		chromedp.Navigate(targetUrl),
+		chromedp.Evaluate(`document.doctype ? new XMLSerializer().serializeToString(document.doctype) : ''`, &doctype), // Fetch DOCTYPE seprately as OuterHTML does not return DOCTYPE
+		chromedp.OuterHTML("html", &htmlContent),
+	)
 	if err != nil {
-		return nil, fmt.Errorf("unable to connect with the url. error: %w", err)
+		return nil, fmt.Errorf("unable to connect to the given url. error: %w", err)
 	}
 
-	// Close the resource to prevent leakages
-	defer resp.Body.Close()
-
-	// Extract response body (i.e. html content) as a node tree
-	htmlDoc, err := html.Parse(resp.Body)
+	// Parse html content into a node tree
+	htmlDoc, err := html.Parse(strings.NewReader(doctype + htmlContent)) //DOCTYPE is amended to htmlContent
 	if err != nil {
-		return nil, fmt.Errorf("extracting html content failed. error: %w", err)
+		return nil, fmt.Errorf("parsing html content failed. error: %w", err)
 	}
 
+	// Derive base url
 	baseUrl, err := utils.DeriveBaseUrl(targetUrl)
 	if err != nil {
 		return nil, fmt.Errorf("deriving base url failed. error: %w", err)
