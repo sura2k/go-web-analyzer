@@ -5,6 +5,7 @@ import (
 	"go-web-analyzer/services/utils"
 	"log"
 	"strings"
+	"sync"
 
 	"golang.org/x/net/html"
 )
@@ -27,6 +28,7 @@ func (a LinksAnalyzer) Analyze(analyzerInput *models.AnalyzerInput, arm *Analyze
 //   - Hidden <a> tags are also considered
 func getLinkDetails(analyzerInput *models.AnalyzerInput) *models.Links {
 	links := &models.Links{}
+	linkMap := make(map[string]bool) // For tracking purpose
 
 	var traverse func(*html.Node)
 
@@ -52,9 +54,7 @@ func getLinkDetails(analyzerInput *models.AnalyzerInput) *models.Links {
 					if strings.HasPrefix(href, "http://") || strings.HasPrefix(href, "https://") || strings.HasPrefix(href, "//") {
 						// External link
 						links.External.Total++
-						if !utils.IsUrlAccessible(href) {
-							links.External.Inaccessible++
-						}
+						linkMap[href] = true
 					} else if strings.Contains(href, ":") {
 						// All non-hyperlinks are ignored. Ex: ftp://, mailto:
 						links.NonHyperLinks.Total++
@@ -62,9 +62,8 @@ func getLinkDetails(analyzerInput *models.AnalyzerInput) *models.Links {
 					} else {
 						// Internal link
 						links.Internal.Total++
-						if !utils.IsUrlAccessible(utils.DeriveDirectUrl(href, analyzerInput.BaseUrl)) {
-							links.Internal.Inaccessible++
-						}
+						directUrl := utils.DeriveDirectUrl(href, analyzerInput.BaseUrl)
+						linkMap[directUrl] = false
 					}
 				}
 			}
@@ -75,5 +74,61 @@ func getLinkDetails(analyzerInput *models.AnalyzerInput) *models.Links {
 	}
 
 	traverse(analyzerInput.HtmlDoc)
+
+	// Starts the link health checker goroutines
+	startLinkHealthChecker(linkMap, links)
+
 	return links
+}
+
+// Check the accessbility of all the link parallaly and update the inaccessible counts
+//
+// Major Concern:
+//
+//	Since this implementation start all the link processing parally
+//	it leads to uncontrolled goroutine creation and then it will eatup the CPU and RAM
+//	which eventually crashes your application
+//
+// Solution:
+//
+//	Execute links in batches
+func startLinkHealthChecker(linkMap map[string]bool, links *models.Links) {
+	log.Println("LinkHealthChecker: Started. numOfLinks: ", len(linkMap))
+
+	var lock sync.Mutex
+	var wg sync.WaitGroup
+
+	// Start goroutines
+	for key, val := range linkMap {
+		wg.Add(1) // IMPORTANT: No issues even if increment the task count here since wg.Wait() will not be executed till the loop is completed
+		go func(url string, isExternal bool) {
+			defer wg.Done()
+
+			// Check accessibility of the url
+			// Note:
+			//	This takes considerable amount of time to return and
+			//	thats why additional goroutine is used to increase performance
+			isAccessible := utils.IsUrlAccessible(url)
+
+			// Lock
+			lock.Lock()
+
+			// Update the unsafe shared Links struct
+			if !isAccessible {
+				if isExternal {
+					links.External.Inaccessible++
+				} else {
+					links.Internal.Inaccessible++
+				}
+			}
+
+			// Unlock
+			lock.Unlock()
+		}(key, val)
+	}
+
+	// Blocks the main thread until all goroutines are completed
+	wg.Wait()
+
+	log.Println("LinkHealthChecker: Completed")
 }
