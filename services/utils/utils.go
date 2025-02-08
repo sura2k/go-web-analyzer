@@ -3,6 +3,9 @@ package utils
 import (
 	"net/http"
 	"net/url"
+	"time"
+
+	"github.com/sura2k/go-web-analyzer/config"
 )
 
 // Check whether the url is valid
@@ -53,16 +56,15 @@ func DeriveDirectUrl(relativeUrl string, baseUrl string) string {
 //   - All 2xx status codes can be assumed as that the url is accessible
 //   - All 3xx status codes can be assumed as that the url is accessible
 //
-// Improvments:
-//   - Include a timeout
-//
 // Alternative:
 //   - chromedp could be used here, but it takes considerable amount of resoures to setup the browser
 //     and number of links are typically high, chromedp may slowdown the process if it used as a reusbale function
 //   - However if a shared chromedp browser is used, chromedp could be a better option to check the accessiblity
 //     rather than http.Client.Get()
 func IsUrlAccessible(url string) bool {
-	client := &http.Client{}
+	client := &http.Client{
+		Timeout: time.Second * time.Duration(config.Config.Defaults.HTTP.Timeout.Seconds),
+	}
 
 	resp, err := client.Get(url)
 	if err != nil {

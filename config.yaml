@@ -1,0 +1,9 @@
+defaults:
+  http:
+    timeout:
+      seconds: 5
+
+analyzers:
+  LinksAnalyzer:
+    link-health-check:
+      batch-size: 10

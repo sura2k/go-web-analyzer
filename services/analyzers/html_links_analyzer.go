@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/sura2k/go-web-analyzer/config"
 	"github.com/sura2k/go-web-analyzer/models"
 	"github.com/sura2k/go-web-analyzer/services/utils"
 
@@ -97,20 +98,11 @@ func getLinkDetails(analyzerInput *models.AnalyzerInput) *models.Links {
 	return links
 }
 
-// Check the accessbility of all the link parallaly and update the inaccessible counts
-//
-// Major Concern:
-//
-//	Since this implementation start all the link processing parally
-//	it leads to uncontrolled goroutine creation and then it will eatup the CPU and RAM
-//	which eventually crashes your application
-//
-// Solution:
-//
-//	Execute links in batches
+// Check the accessbility of all the link parallaly
+// and update the inaccessible counts
 func startLinkHealthChecker(linkMap map[string]bool, links *models.Links) {
-	// Max number of threads getting executed parally at a time
-	batchSize := 10
+	// Max number of threads getting executed parallaly at a time
+	batchSize := config.Config.Analyzers.LinksAnalyzer.LinkHealthCheck.BatchSize
 
 	log.Println("LinkHealthChecker: Started. batchSize: ", batchSize, ", numOfLinks: ", len(linkMap))
 
