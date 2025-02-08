@@ -1,4 +1,4 @@
-module go-web-analyzer
+module github.com/sura2k/go-web-analyzer
 
 go 1.23.6
 

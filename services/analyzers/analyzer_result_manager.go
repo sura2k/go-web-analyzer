@@ -1,8 +1,9 @@
 package analyzers
 
 import (
-	"go-web-analyzer/models"
 	"sync"
+
+	"github.com/sura2k/go-web-analyzer/models"
 )
 
 // AnalyzerResultManager manages the concurrent writes

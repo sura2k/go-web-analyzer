@@ -1,9 +1,10 @@
 package main
 
 import (
-	"go-web-analyzer/controllers/view"
 	"log"
 	"net/http"
+
+	"github.com/sura2k/go-web-analyzer/controllers/view"
 )
 
 func main() {

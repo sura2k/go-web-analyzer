@@ -1,13 +1,14 @@
 package analyzers
 
 import (
-	"go-web-analyzer/models"
-	"go-web-analyzer/services/utils"
 	"log"
 	"maps"
 	"slices"
 	"strings"
 	"sync"
+
+	"github.com/sura2k/go-web-analyzer/models"
+	"github.com/sura2k/go-web-analyzer/services/utils"
 
 	"golang.org/x/net/html"
 )

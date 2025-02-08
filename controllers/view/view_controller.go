@@ -1,11 +1,12 @@
 package view
 
 import (
-	"go-web-analyzer/models"
-	"go-web-analyzer/services/analyzers"
 	"html/template"
 	"log"
 	"net/http"
+
+	"github.com/sura2k/go-web-analyzer/models"
+	"github.com/sura2k/go-web-analyzer/services/analyzers"
 )
 
 // AnalyzerViewHandler

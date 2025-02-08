@@ -1,9 +1,10 @@
 package analyzers
 
 import (
-	"go-web-analyzer/models"
 	"log"
 	"sync"
+
+	"github.com/sura2k/go-web-analyzer/models"
 )
 
 // AnalyzerManager runs all analyzers parallaly

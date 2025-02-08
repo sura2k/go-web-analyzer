@@ -1,6 +1,6 @@
 package analyzers
 
-import "go-web-analyzer/models"
+import "github.com/sura2k/go-web-analyzer/models"
 
 // IAnalyzer interface
 type IAnalyzer interface {

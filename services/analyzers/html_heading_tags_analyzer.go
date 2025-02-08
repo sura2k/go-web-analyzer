@@ -1,8 +1,9 @@
 package analyzers
 
 import (
-	"go-web-analyzer/models"
 	"log"
+
+	"github.com/sura2k/go-web-analyzer/models"
 
 	"golang.org/x/net/html"
 )
