@@ -55,6 +55,12 @@ func DeriveDirectUrl(relativeUrl string, baseUrl string) string {
 //
 // Improvments:
 //   - Include a timeout
+//
+// Alternative:
+//   - chromedp could be used here, but it takes considerable amount of resoures to setup the browser
+//     and number of links are typically high, chromedp may slowdown the process if it used as a reusbale function
+//   - However if a shared chromedp browser is used, chromedp could be a better option to check the accessiblity
+//     rather than http.Client.Get()
 func IsUrlAccessible(url string) bool {
 	client := &http.Client{}
 
