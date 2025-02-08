@@ -48,7 +48,13 @@ func DeriveDirectUrl(relativeUrl string, baseUrl string) string {
 	return parsedBaseUrl.ResolveReference(&url.URL{Path: relativeUrl}).String()
 }
 
-// Check if the url is accessible - whether returns HTTP 2xx
+// Check if the url is accessible
+// Assumptions:
+//   - All 2xx status codes can be assumed as that the url is accessible
+//   - All 3xx status codes can be assumed as that the url is accessible
+//
+// Improvments:
+//   - Include a timeout
 func IsUrlAccessible(url string) bool {
 	client := &http.Client{}
 
@@ -58,8 +64,8 @@ func IsUrlAccessible(url string) bool {
 	}
 	defer resp.Body.Close()
 
-	// Check the response status code is 2xx
-	if resp.StatusCode/100 == 2 {
+	// Check the response status code is 2xx or 3xx
+	if resp.StatusCode/100 == 2 || resp.StatusCode/100 == 3 {
 		return true
 	} else {
 		return false
