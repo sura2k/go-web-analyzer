@@ -53,11 +53,17 @@ func (aPreproc *AnalyzerPreprocessor) ExecutePreprocessor() (*models.AnalyzerInp
 		return nil, fmt.Errorf("deriving base url failed. error: %w", err)
 	}
 
+	host, err := utils.DeriveHost(targetUrl)
+	if err != nil {
+		return nil, fmt.Errorf("deriving host failed. error: %w", err)
+	}
+
 	log.Println("AnalyzerPreprocessor: Input preprocessing completed")
 
 	return &models.AnalyzerInput{
 		TargetUrl: targetUrl,
 		BaseUrl:   baseUrl,
+		Host:      host,
 		HtmlDoc:   htmlDoc,
 	}, nil
 }

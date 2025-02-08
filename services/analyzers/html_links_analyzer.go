@@ -53,11 +53,17 @@ func getLinkDetails(analyzerInput *models.AnalyzerInput) *models.Links {
 
 					// Assumes if the href starts with "http://", "https://" or "//" are external links
 					if strings.HasPrefix(href, "http://") || strings.HasPrefix(href, "https://") || strings.HasPrefix(href, "//") {
-						// External link
+						// Mainly external, but internal links can also be there with full url
+						isExternal := isExternalLink(href, analyzerInput.Host)
 						_, alreadyFound := linkMap[href]
 						if !alreadyFound {
-							links.External.Total++
-							linkMap[href] = true
+							if isExternal {
+								links.External.Total++
+								linkMap[href] = true
+							} else {
+								links.Internal.Total++
+								linkMap[href] = false
+							}
 						}
 					} else if strings.Contains(href, ":") {
 						// All non-hyperlinks are ignored. Ex: ftp://, mailto:
@@ -138,4 +144,10 @@ func startLinkHealthChecker(linkMap map[string]bool, links *models.Links) {
 	wg.Wait()
 
 	log.Println("LinkHealthChecker: Completed")
+}
+
+// Check whether the given hrefUrl is external based on page's host
+func isExternalLink(hrefUrl string, pageHost string) bool {
+	uhrefUrlHost, _ := utils.DeriveHost(hrefUrl)
+	return uhrefUrlHost != pageHost
 }

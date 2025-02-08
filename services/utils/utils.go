@@ -28,6 +28,16 @@ func DeriveBaseUrl(rawUrl string) (string, error) {
 	return baseUrl, nil
 }
 
+// Derive host from the given url
+func DeriveHost(rawUrl string) (string, error) {
+	parsedUrl, err := url.Parse(rawUrl)
+	if err != nil {
+		return "", err
+	}
+
+	return parsedUrl.Host, nil
+}
+
 // Derive direct url for relative urls
 func DeriveDirectUrl(relativeUrl string, baseUrl string) string {
 	parsedBaseUrl, err := url.Parse(baseUrl)

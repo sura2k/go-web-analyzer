@@ -6,5 +6,6 @@ import "golang.org/x/net/html"
 type AnalyzerInput struct {
 	TargetUrl string
 	BaseUrl   string
+	Host      string
 	HtmlDoc   *html.Node
 }
