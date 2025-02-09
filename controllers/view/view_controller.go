@@ -14,7 +14,7 @@ import (
 // Methods: GET, POST
 func AnalyzerViewHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		getAnalyzerViewHandler(w, r)
+		getAnalyzerViewHandler(w)
 	} else if r.Method == http.MethodPost {
 		postAnalyzerViewHandler(w, r)
 	} else {
@@ -24,7 +24,7 @@ func AnalyzerViewHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // Return Analyzer View
-func getAnalyzerViewHandler(w http.ResponseWriter, r *http.Request) {
+func getAnalyzerViewHandler(w http.ResponseWriter) {
 	renderTemplate(w, &models.AnalyzerResponse{})
 }
 
@@ -37,9 +37,9 @@ func postAnalyzerViewHandler(w http.ResponseWriter, r *http.Request) {
 	targetUrl := r.FormValue("targetUrl")
 	log.Println("AnalyzerViewHandler: Analyze request received. targetUrl:", targetUrl)
 
-	// Execute Analyzers
+	// Invoke AnalyzerManager
 	analyzerManager := analyzers.NewAnalyzerManager(targetUrl)
-	analyzerResult, err := analyzerManager.ExecuteAnalyzers()
+	analyzerResult, err := analyzerManager.Start()
 
 	analyzerResponse := &models.AnalyzerResponse{Processed: true}
 	if err != nil {

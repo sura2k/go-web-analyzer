@@ -13,7 +13,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-// AnalyzerPreprocessor runs few vaidations and returns AnalyzerInput
+// AnalyzerPreprocessor runs vaidations and transformations, then returns AnalyzerInput
 type AnalyzerPreprocessor struct {
 	targetUrl string
 }
@@ -23,7 +23,7 @@ func NewAnalyzerPreprocessor(targetUrl string) *AnalyzerPreprocessor {
 	return &AnalyzerPreprocessor{targetUrl: targetUrl}
 }
 
-// ExecutePreprocessor evaluates some basic validations and populate AnalyzerInput
+// ExecutePreprocessor evaluates some basic validations, data transformation and populate AnalyzerInput
 func (aPreproc *AnalyzerPreprocessor) ExecutePreprocessor() (*models.AnalyzerInput, error) {
 	log.Println("AnalyzerPreprocessor: Input preprocessing started")
 
@@ -67,7 +67,7 @@ func (aPreproc *AnalyzerPreprocessor) ExecutePreprocessor() (*models.AnalyzerInp
 		return nil, fmt.Errorf("deriving host failed. error: %w", err)
 	}
 
-	log.Println("AnalyzerPreprocessor: Input preprocessing completed")
+	log.Println("AnalyzerPreprocessor: Input preprocessing completed baseUrl: ", baseUrl, ", host: ", host)
 
 	return &models.AnalyzerInput{
 		TargetUrl: targetUrl,
