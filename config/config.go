@@ -9,10 +9,15 @@ import (
 
 // init() will be triggered by GO when the package is loaded
 func init() {
+
+	// Set default config values
+	setDefaults()
+
 	// Get the config path from the environment variable
 	configPath := os.Getenv("CONFIG_PATH")
 	if configPath == "" {
-		log.Fatal("CONFIG_PATH environment variable is not set")
+		log.Println("WARNING: CONFIG_PATH environment variable is not set")
+		configPath = "."
 	}
 
 	viper.SetConfigName("config") // Config file name
@@ -21,7 +26,9 @@ func init() {
 	viper.AutomaticEnv()            // Advice to read from Env Variables as well. Note: Env has the higher precedency over config file
 
 	if err := viper.ReadInConfig(); err != nil {
-		log.Fatalf("config file error: %s", err) // Note: Log.Fatalf() will execute os.Exit(1) to exit fom the application
+		log.Println("WARNING: Config file not found. Using default values")
+	} else {
+		log.Println("Config file loaded successfully")
 	}
 
 	// Unmarshal the config file properties into the global Config struct
@@ -31,6 +38,13 @@ func init() {
 	}
 
 	log.Println("Configurations loaded")
+}
+
+// Set default values
+func setDefaults() {
+	viper.SetDefault("server.port", 8080)
+	viper.SetDefault("defaults.http.timeout.seconds", 5)
+	viper.SetDefault("analyzers.LinksAnalyzer.link-health-check.batch-size", 10)
 }
 
 // Global variable to hold the config values
