@@ -1,11 +1,11 @@
 # go-web-analyzer
 Web application for analyzing web pages
 
-## Setup Instructions ##
-### Prerequisites ###
+# 1. Setup #
+### 1.1 Prerequisites ###
 - Go 1.23.6 or above
 
-### Setup and Run ###
+### 1.2. Setup and Run ###
 **Step 1**: Clone the Repository
 ```
   git clone https://github.com/sura2k/go-web-analyzer.git`
@@ -13,9 +13,16 @@ Web application for analyzing web pages
 ```
 
 **Step 2**: Install Dependencies
+
+Run the following command to install necessary dependencies:
 ```
   go mod tidy
 ```
+
+Note: The following external dependencies will be installed:
+  - `github.com/chromedp/chromedp v0.12.1` – Headless browser for fetching fully rendered HTML
+  - `github.com/spf13/viper v1.19.0` – Configuration management with support for `yaml`, `toml`, etc and `environment variables`
+  - `github.com/stretchr/testify v1.10.0` – Testing utilities for assertions
 
 **Step 3**: Set Up Configuration (Optional)
 1. Copy `config.yaml` from the root of `go-web-analyzer` to a preferred external location
@@ -28,7 +35,7 @@ Web application for analyzing web pages
 | Configuration | Description | Default Value |
 |----------|----------|----------|
 | `server.port`    | Server port    | 8080    |
-| `defaults.http.timeout.seconds`    | Default HTTP Timeout    | 5    |
+| `defaults.http.timeout.seconds`    | Default HTTP Timeout (in seconds)   | 5    |
 | `analyzers.LinksAnalyzer.link-health-check.batch_size` | Link Helath Check Batch Size    |  10    |
   
 **Step 4**: Run from Source
@@ -50,22 +57,37 @@ If the application starts successfully, you should see the following logs in the
 
 Open your browser and navigate to: `http://localhost:8080`
 
+![image](https://github.com/user-attachments/assets/fd78fbeb-fc40-4f9c-867b-ce8aba369675)
+
 **Step 7**: Submit a URL for Analysis
 
-(Screenshot placeholder here)
+![image](https://github.com/user-attachments/assets/2653ec05-8d32-404b-8d37-acba852954bd)
+
+You will see logs in your console as in shown below:
+![image](https://github.com/user-attachments/assets/59c3c51e-b8b4-4e8f-baa4-992f3fb0a912)
 
 **Step 8**: View Analyzed Results
 
-(Screenshot placeholder here)
+![image](https://github.com/user-attachments/assets/eb98b0e0-cf6a-4a06-977f-860f6d42f49d)
 
-### Run Unit Tests ###
+*Note: If you notice or encountered that some of the accessible links are returned as not-accessible, try to increase the http time out via `defaults.http.timeout.seconds` configuration property.*
+
+### 1.3. Changing Configurations ###
+
+If you need to change certain configuration properties, make sure to update them in `config.yaml` located in `CONFIG_PATH` directory and restart the application
+
+### 1.4. Run Unit Tests ###
 ```
   cd go-web-analyzer
   go test ./... -cover
 ```
-View Analyzed Results
 
-### Project Structure ###
+### 1.5. Code Coverage ###
+![image](https://github.com/user-attachments/assets/1e203aab-f635-48d1-8fe7-8029da840215)
+
+
+# 2. Design Overview #
+### 2.1. Project Structure ###
 ```
 /
   ├── config/                 - Contains structs and functions for managing application configuration 
@@ -81,9 +103,11 @@ View Analyzed Results
   └── config.yaml             - A reference-only configuration file
 ```
 
-### System Design ###
+### 2.2. System Design ###
+(Screenshot placeholder here)
+(Screenshot placeholder here)
 
-### Challenges & Solutions ###
+### 2.3. Challenges & Solutions ###
 *1. Analyzer execution*
    - Problem:
        - When analyzers run sequentially, the process takes significantly longer as it is a blocking operation
@@ -113,25 +137,25 @@ View Analyzed Results
    - Solution:
        - Integrated the `viper` library, which supports both `yaml` configuration files and environment variables with precedence handling
 
-### Further Considerations ###
+### 2.4. Further Considerations ###
+TODO
 
 
-### Code Coverage ###
-(Screenshot placeholder here)
+-----------------------------------------------------------------------
 
-## Checklist ##
+# 3. Checklist #
 
-### 1. Project Structure ###
-#### 1.1. Code Organization: ####
+### 3.1. Project Structure ###
+#### 3.1.1. Code Organization: ####
 - Maintain a clear project structure with logical separation of concerns (e.g., using packages). `[DONE]`
 - Ensure consistent naming conventions and code style. `[DONE]`
 
-#### 1.2. Repository Management: ####
+#### 3.1.2. Repository Management: ####
 - Include a.gitignore file to prevent committing unnecessary files. `[DONE]`
 - Use a clear commit history with descriptive messages. `[DONE]`
 
-### 2. Documentation ###
-#### 2.1. Readme: ####
+### 3.2. Documentation ###
+#### 3.2.1. Readme: ####
 - Should include a project overview, setup instructions, and usage examples. `[DONE]`
 - Provide information on key components and their roles. `[TODO]`
 - Include guidance on how to run the project (including prerequisites, commands, and examples). `[DONE]`
@@ -139,50 +163,50 @@ View Analyzed Results
 - Include details on how to run tests and what the expected outcomes are. `[TODO]`
 - Discuss possible improvements or extensions to the project. `[TODO]`
 
-#### 2.2. Additional Documentation: ####
+#### 3.2.2. Additional Documentation: ####
 - Create inline comments for complex code sections. `[DONE]`
 
-### 3. Quality and Testing ###
-#### 3.1. Unit Tests: ####
+### 3.3. Quality and Testing ###
+#### 3.3.1. Unit Tests: ####
 - Cover all major functions and methods with appropriate unit tests. `[DONE]`
 - Ensure test cases include edge cases and error handling scenarios. `[DONE]`
 - Use assertions to validate expected outcomes. `[WIP]`
 
-#### 3.2. Code Coverage: ####
+#### 3.3.2. Code Coverage: ####
 - Aim for a reasonable level of test coverage (e.g., >70%). `[DONE - > Covered 96% in analyzers]`
 - In case of limited time try to cover at least happy path `[DONE]`
 
-### 3.3. Code Quality Tools: ###
+### 3.3.3. Code Quality Tools: ###
 - Use linters (e.g., golint, go vet) to maintain consistent code quality. `[DONE using stylecheck]`
 - Run static analysis to detect potential issues or vulnerabilities. `[DONE using stylecheck]`
 
-### 4. Deployment and Operations ###
-#### 4.1. Single Command for Running the Project: ####
+### 3.4. Deployment and Operations ###
+#### 3.4.1. Single Command for Running the Project: ####
 - Provide a simple command or script to build and run the project. `[SKIPPED]`
 
-#### 4.2. Dockerization: ####
+#### 3.4.2. Dockerization: ####
 - Only if you have knowledge with Docker `[SKIP]`
 - Include a Dockerfile for containerization. `[SKIP]`
 - Optionally, provide a docker-compose.yml file for complex setups. `[SKIPPED]`
 
-#### 4.3. CI/CD Flow: ####
+#### 3.4.3. CI/CD Flow: ####
 - Only if you have knowledge with CI CD `[SKIP]`
 - Implement basic CI/CD processes (e.g., GitHub Actions, CircleCI). `[SKIPPED]`
 - Set up automated builds, tests, and deployments. `[SKIP]`
 
-#### 4.4. Environment Configuration: ####
+#### 3.4.4. Environment Configuration: ####
 - Use environment variables or configuration files to manage settings. `[DONE]`
 
-#### 4.5. Logging and Monitoring: ####
+#### 3.4.5. Logging and Monitoring: ####
 - Implement basic logging to track application behavior and errors. `[DONE]`
 - Optionally, integrate monitoring tools for runtime insights. `[SKIPPED]`
 
-### 5. Other Considerations ###
-#### 5.1. Error Handling and Robustness: ####
+### 3.5. Other Considerations ###
+#### 3.5.1. Error Handling and Robustness: ####
 - Handle errors gracefully, providing useful error messages. `[DONE]`
 - Ensure the application doesn't crash unexpectedly due to unhandled errors. `[DONE]`
 
-#### 5.2. Code Performance and Optimization: ####
+#### 3.5.2. Code Performance and Optimization: ####
 - Identify potential performance bottlenecks and optimize where necessary. `[DONE]`
 - Include profiling tools for performance analysis (optional) if you have experience only. `[SKIPPED]`
 - Try to utilize go routines if it makes sense. `[DONE]`
