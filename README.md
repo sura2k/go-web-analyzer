@@ -104,8 +104,10 @@ If you need to change certain configuration properties, make sure to update them
 ```
 
 ### 2.2. System Design ###
-(Screenshot placeholder here)
-(Screenshot placeholder here)
+![LucyTech_Analyzer drawio](https://github.com/user-attachments/assets/bebb87b6-1af5-4695-b7f9-3cb201d24f4b)
+
+![Untitled](https://github.com/user-attachments/assets/e95b43a4-84b4-41c4-a3c8-3c64336a4318)
+
 
 ### 2.3. Challenges & Solutions ###
 *1. Analyzer execution*
@@ -131,7 +133,7 @@ If you need to change certain configuration properties, make sure to update them
    - Solution:
        - Use `chromedp`, a JavaScript-enabled headless browser library, to fetch the complete HTML after JavaScript has fully loaded
 
-4. Configuration Management
+*4. Configuration Management*
    - Problem:
        - Some environment-specific settings, such as changing the server port, require configurable options
    - Solution:
