@@ -11,69 +11,80 @@
             font-weight: bold;
         }
     </style>
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault();
+            document.getElementById('result').innerText = 'Please wait...';
+            document.getElementById('submitBtn').disabled = true;
+            setTimeout(() => {
+                event.target.submit();
+            }, 10);
+        }
+    </script>
 </head>
 <body>
     <div style="text-align: center;">
         <h2>Go Web Page Analyzer</h2>
-        <form action="/" method="post">
+        <form action="/" method="post" onsubmit="handleSubmit(event)">
             <input style="width: 600px" type="text" name="targetUrl" placeholder="Enter Page URL to Analyze" required> </br>
-            <button style="margin-top: 10px;" type="submit">Analyze</button>
+            <button style="margin-top: 10px;" type="submit" id="submitBtn">Analyze</button>
         </form>
-        {{if .Processed}}
-            {{if .Status}}
-                <h4>Analyzer results as follows:</h4>
-                <table style="margin-left: auto; margin-right: auto; width: 600px">
-                    <tr>
-                        <td class="thick">URL </td>
-                        <td>{{.Data.TargetUrl}}</td>
-                    </tr>
-                    <tr>
-                        <td class="thick">HTML Version </td>
-                        <td>{{.Data.HtmlVersion}}</td>
-                    </tr>
-                    <tr>
-                        <td class="thick">Page Title </td>
-                        <td>{{.Data.PageTitle}}</td>
-                    </tr>
-                    <tr>
-                        <td class="thick">Headings </td>
-                        <td>
-                            H1 = {{.Data.Headings.H1Count}} </br>
-                            H2 = {{.Data.Headings.H2Count}} </br>
-                            H3 = {{.Data.Headings.H3Count}} </br>
-                            H4 = {{.Data.Headings.H4Count}} </br>
-                            H5 = {{.Data.Headings.H5Count}} </br>
-                            H6 = {{.Data.Headings.H6Count}} </br>
-                            </br>
-                            <i>Note: This includes hidden tags as well</i>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="thick">Links </td>
-                        <td>
-                            External = {{.Data.Links.External.Total}} </br>
-                            External Inaccessible = {{.Data.Links.External.Inaccessible}} </br>
-                            Internal = {{.Data.Links.Internal.Total}} </br>
-                            Internal Inaccessible = {{.Data.Links.Internal.Inaccessible}} </br>
-                            Empty Links = {{.Data.Links.EmptyLinks.Total}} </br>
-                            Non-HyperLinks = {{.Data.Links.NonHyperLinks.Total}} (i.e. ftp://, mailto:, etc)</br>
-                            </br>
-                            <i>Note: Hidden links are included</i></br>
-                            <i>Note: Duplicate links are ignored</i>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="thick">Has Login </td>
-                        <td>
-                            {{if .Data.HasLoginForm}}Yes{{else}}No{{end}}
-                        </td>
-                    </tr>
-                </table>
-            {{else}}
-                <b>Error: </b>
-                <p style="color: red;">{{.Message}}</p>
+        <div id="result" style="margin: 0 auto; width: 600px;">
+            {{if .Processed}}
+                {{if .Status}}
+                    <h4>Analyzer results as follows:</h4>
+                    <table style="margin-left: auto; margin-right: auto; width: 600px">
+                        <tr>
+                            <td class="thick">URL </td>
+                            <td>{{.Data.TargetUrl}}</td>
+                        </tr>
+                        <tr>
+                            <td class="thick">HTML Version </td>
+                            <td>{{.Data.HtmlVersion}}</td>
+                        </tr>
+                        <tr>
+                            <td class="thick">Page Title </td>
+                            <td>{{.Data.PageTitle}}</td>
+                        </tr>
+                        <tr>
+                            <td class="thick">Headings </td>
+                            <td>
+                                H1 = {{.Data.Headings.H1Count}} </br>
+                                H2 = {{.Data.Headings.H2Count}} </br>
+                                H3 = {{.Data.Headings.H3Count}} </br>
+                                H4 = {{.Data.Headings.H4Count}} </br>
+                                H5 = {{.Data.Headings.H5Count}} </br>
+                                H6 = {{.Data.Headings.H6Count}} </br>
+                                </br>
+                                <i>Note: This includes hidden tags as well</i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="thick">Links </td>
+                            <td>
+                                External = {{.Data.Links.External.Total}} </br>
+                                External Inaccessible = {{.Data.Links.External.Inaccessible}} </br>
+                                Internal = {{.Data.Links.Internal.Total}} </br>
+                                Internal Inaccessible = {{.Data.Links.Internal.Inaccessible}} </br>
+                                Empty Links = {{.Data.Links.EmptyLinks.Total}} </br>
+                                Non-HyperLinks = {{.Data.Links.NonHyperLinks.Total}} (i.e. ftp://, mailto:, etc)</br>
+                                </br>
+                                <i>Note: Hidden links are included</i></br>
+                                <i>Note: Duplicate links are ignored</i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="thick">Has Login </td>
+                            <td>
+                                {{if .Data.HasLoginForm}}Yes{{else}}No{{end}}
+                            </td>
+                        </tr>
+                    </table>
+                {{else}}
+                    <p><b>Error: </b><span style="color: red;">{{.Message}}</span></p>
+                {{end}}
             {{end}}
-        {{end}}
+        </div>
     </div>
 </body>
 </html>
