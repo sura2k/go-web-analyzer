@@ -139,9 +139,19 @@ If you need to change certain configuration properties, make sure to update them
    - Solution:
        - Integrated the `viper` library, which supports both `yaml` configuration files and environment variables with precedence handling
 
-### 2.4. Further Considerations ###
-TODO
+### 2.4. Further Improvements ###
+1. Move the frontend to a separate project, possibly using React or Angular
+2. Replace view controllers with REST controllers
+3. Add rate limiters to control the number of requests
+4. If the number of analyzers grows, process them in batches when a set limit is exceeded
+5. Allow the backend to enable or disable specific analyzers through configuration
+6. Update the UI and APIs to let users choose which analyzers to run
 
+### 2.5. Concerns and Assumptions  ###
+1. Hidden heading tags (`<h1>`, `<h2>`, etc.) and link tags (`<a>`) are treated as valid since handling all edge cases is complex
+2. Some login forms, especially Ajax-based logins, may not use standard `<form>` tags, so they are not detected
+3. Hidden forms (`<form>`) with proper login fields are still considered valid login forms
+4. `vipe` library gives higher priority to environment variables over configuration files by default
 
 -----------------------------------------------------------------------
 
