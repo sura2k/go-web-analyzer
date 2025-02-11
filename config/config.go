@@ -35,6 +35,9 @@ func init() {
 
 // Global variable to hold the config values
 var Config struct {
+	Server struct {
+		Port int `mapstructure:"port"`
+	} `mapstructure:"server"`
 	Defaults struct {
 		HTTP struct {
 			Timeout struct {
