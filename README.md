@@ -103,13 +103,21 @@ If you need to change certain configuration properties, make sure to update them
   └── config.yaml             - A reference-only configuration file
 ```
 
-### 2.2. System Design ###
+### 2.3. Key Components ###
+1. `/main.go` - Application entry point
+2. `/controller/view/view_controller.go` - View Controller handles page's GET and submit POST requests
+3. `/services/analyzers/analyzer_manager.go` - Act as the analyzer workflow orchestrator
+4. `/services/analyzers/analyzer_preprocessor.go` - A Preprocessor which validates input, fetch html content and transform, etc. Invoked by the analyzer_manager
+5. `/services/analyzers/analyzer_executor.go` - Executor all the analyzers parallaly. Invoked by the analyzer_manager
+6. `/services/analyzers/*_analyzer.go` - All the available analyzer implementations
+
+### 2.3. System Design ###
 ![LucyTech_Analyzer drawio](https://github.com/user-attachments/assets/bebb87b6-1af5-4695-b7f9-3cb201d24f4b)
 
 ![Untitled](https://github.com/user-attachments/assets/e95b43a4-84b4-41c4-a3c8-3c64336a4318)
 
 
-### 2.3. Challenges & Solutions ###
+### 2.4. Challenges & Solutions (Already Adressed) ###
 *1. Analyzer execution*
    - Problem:
        - When analyzers run sequentially, the process takes significantly longer as it is a blocking operation
@@ -139,9 +147,19 @@ If you need to change certain configuration properties, make sure to update them
    - Solution:
        - Integrated the `viper` library, which supports both `yaml` configuration files and environment variables with precedence handling
 
-### 2.4. Further Considerations ###
-TODO
+### 2.5. Further Improvements (Suggestions) ###
+1. Move the frontend to a separate project, possibly using React or Angular
+2. Replace view controllers with REST controllers
+3. Add rate limiters to control the number of requests
+4. If the number of analyzers grows, process them in batches when a set limit is exceeded
+5. Allow the backend to enable or disable specific analyzers through configuration
+6. Update the UI and APIs to let users choose which analyzers to run
 
+### 2.6. Concerns and Assumptions  ###
+1. Hidden heading tags (`<h1>`, `<h2>`, etc.) and link tags (`<a>`) are treated as valid since handling all edge cases is complex
+2. Some login forms, especially Ajax-based logins, may not use standard `<form>` tags, so they are not detected
+3. Hidden forms (`<form>`) with proper login fields are still considered valid login forms
+4. `vipe` library gives higher priority to environment variables over configuration files by default
 
 -----------------------------------------------------------------------
 
@@ -159,11 +177,11 @@ TODO
 ### 3.2. Documentation ###
 #### 3.2.1. Readme: ####
 - Should include a project overview, setup instructions, and usage examples. `[DONE]`
-- Provide information on key components and their roles. `[TODO]`
+- Provide information on key components and their roles. `[DONE]`
 - Include guidance on how to run the project (including prerequisites, commands, and examples). `[DONE]`
-- Mention any external dependencies and how to install them. `[TODO]`
-- Include details on how to run tests and what the expected outcomes are. `[TODO]`
-- Discuss possible improvements or extensions to the project. `[TODO]`
+- Mention any external dependencies and how to install them. `[DONE]`
+- Include details on how to run tests and what the expected outcomes are. `[DONE]`
+- Discuss possible improvements or extensions to the project. `[DONE]`
 
 #### 3.2.2. Additional Documentation: ####
 - Create inline comments for complex code sections. `[DONE]`
@@ -172,7 +190,7 @@ TODO
 #### 3.3.1. Unit Tests: ####
 - Cover all major functions and methods with appropriate unit tests. `[DONE]`
 - Ensure test cases include edge cases and error handling scenarios. `[DONE]`
-- Use assertions to validate expected outcomes. `[WIP]`
+- Use assertions to validate expected outcomes. `[DONE]`
 
 #### 3.3.2. Code Coverage: ####
 - Aim for a reasonable level of test coverage (e.g., >70%). `[DONE - > Covered 96% in analyzers]`
