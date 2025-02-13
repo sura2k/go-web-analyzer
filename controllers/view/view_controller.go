@@ -54,11 +54,9 @@ func postAnalyzerViewHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // Reusable function to render the tempate
-/*
-	Parameters:
-	- w: The HTTP response writer.
-	- analyzeResponse: A pointer to AnalyzeResponse struct containing analysis details. A pointer is used to minimize the effort of copying objects
-*/
+// Parameters:
+//   - w: The HTTP response writer.
+//   - analyzeResponse: A pointer to AnalyzeResponse struct containing analysis details
 func renderTemplate(w http.ResponseWriter, analyzerResponse *models.AnalyzerResponse) {
 	tmpl, err := template.ParseFiles("templates/home.html")
 	if err != nil {

@@ -98,8 +98,7 @@ func getLinkDetails(analyzerInput *models.AnalyzerInput) *models.Links {
 	return links
 }
 
-// Check the accessbility of all the link parallaly
-// and update the inaccessible counts
+// Check the accessbility of all the link parallaly and update the inaccessible counts
 func startLinkHealthChecker(linkMap map[string]bool, links *models.Links) {
 	// Max number of threads getting executed parallaly at a time
 	batchSize := config.Config.Analyzers.LinksAnalyzer.LinkHealthCheck.BatchSize

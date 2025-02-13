@@ -53,14 +53,7 @@ func DeriveDirectUrl(relativeUrl string, baseUrl string) string {
 
 // Check if the url is accessible
 // Assumptions:
-//   - All 2xx status codes can be assumed as that the url is accessible
-//   - All 3xx status codes can be assumed as that the url is accessible
-//
-// Alternative:
-//   - chromedp could be used here, but it takes considerable amount of resoures to setup the browser
-//     and number of links are typically high, chromedp may slowdown the process if it used as a reusbale function
-//   - However if a shared chromedp browser is used, chromedp could be a better option to check the accessiblity
-//     rather than http.Client.Get()
+//   - If the GET url returns with either 2xx or 3xx status codes, considered the url is accessible
 func IsUrlAccessible(url string) bool {
 	client := &http.Client{
 		Timeout: time.Second * time.Duration(config.Config.Defaults.HTTP.Timeout.Seconds),
