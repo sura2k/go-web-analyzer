@@ -1,11 +1,120 @@
 # go-web-analyzer
 Web application for analyzing web pages
 
-# 1. Setup #
-### 1.1 Prerequisites ###
+# Table of Contents #
+     
+1. [Design Overview](#1-design-overview)
+
+     1.1. [Project Structure](#11-project-structure)
+
+     1.2. [Key Components](#12-key-components)
+
+     1.3. [System Design](#13-system-design)
+
+     1.4. [Challenges & Solutions (Already Adressed)](#14-challenges--solutions-already-adressed)
+
+     1.5. [Further Improvements (Suggestions)](#15-further-improvements-suggestions)
+
+     1.6. [Concerns and Assumptions](#16-concerns-and-assumptions)
+   
+2. [Setup the Project](#2-setup-the-project)
+   
+     2.1. [Prerequisites](#21-prerequisites)
+     
+     2.2. [Setup and Run](#22-setup-and-run)
+     
+     2.2.3. [Configurations](#configurations)
+     
+     2.3. [Changing Configurations](#23-changing-configurations)
+     
+     2.4. [Run Unit Tests](#24-run-unit-tests)
+     
+     2.5. [Code Coverage](#25-code-coverage)
+   
+4. [Checklist](#3-checklist)
+
+
+# 1. Design Overview #
+### 1.1. Project Structure ###
+```
+/
+  ├── config/                 - Contains structs and functions for managing application configuration 
+  ├── controllers/            - Contains all controller-related functions           
+  │    └── rest/              - Contains REST controllers (Note: No REST controllers at the moment) 
+  │    └── view/              - Contains view controllers for rendering UI  
+  ├── services/               - Handles business logic and core functionalities
+  │    └── analyzers/         - Implements analyzers and related functions 
+  │    └── utils/             - Provides shared utility and helper functions 
+  ├── templates/              - Stores HTML view templates 
+  │
+  └── main.go                 - Entry point of the application 
+  └── config.yaml             - A reference-only configuration file
+```
+
+### 1.2. Key Components ###
+1. `/main.go` - Application entry point
+2. `/controller/view/view_controller.go` - View Controller handles page's GET and submit POST requests
+3. `/services/analyzers/analyzer_manager.go` - Act as the analyzer workflow orchestrator
+4. `/services/analyzers/analyzer_preprocessor.go` - A Preprocessor which validates input, fetch html content and transform, etc. Invoked by the analyzer_manager
+5. `/services/analyzers/analyzer_executor.go` - Executor all the analyzers parallaly. Invoked by the analyzer_manager
+6. `/services/analyzers/*_analyzer.go` - All the available analyzer implementations
+
+### 1.3. System Design ###
+![LucyTech_Analyzer drawio](https://github.com/user-attachments/assets/bebb87b6-1af5-4695-b7f9-3cb201d24f4b)
+
+![Untitled](https://github.com/user-attachments/assets/e95b43a4-84b4-41c4-a3c8-3c64336a4318)
+
+
+### 1.4. Challenges & Solutions (Already Adressed) ###
+*1. Analyzer execution*
+   - Problem:
+       - When analyzers run sequentially, the process takes significantly longer as it is a blocking operation
+   - Solution
+       - Run all analyzers in parallel using goroutines
+   
+*2. Improved Link Accessibility Checks in `LinksAnalyzer`*
+   - Problem:
+       - When `LinksAnalyzer` checks the accessibility of multiple `<a href="...">` links in the document, execution time increases as the number of links grows
+   - Solution 1:
+       - Execute link accessibility checks in parallel using goroutines
+   - Problem with Solution 1:
+       - If too many links are processed simultaneously, high CPU/RAM usage may lead to system crashes
+   - Solution 2:
+       - Process links in batches. Each batch runs in parallel, and the next batch starts after the previous one completes
+       - The default batch size is 10 and can be adjusted using the configuration property `analyzers.LinksAnalyzer.link-health-check.batch_size`
+   
+*3. Enhanced HTML Content Fetching from URLs*
+   - Problem:
+       - Go's default `http.Get()` fetches only the initial HTML content, often **before JavaScript execution** or **before a proxy processes the request**. As a result, the fetched HTML may not match what is displayed in a browser.
+   - Solution:
+       - Use `chromedp`, a JavaScript-enabled headless browser library, to fetch the complete HTML after JavaScript has fully loaded
+
+*4. Configuration Management*
+   - Problem:
+       - Some environment-specific settings, such as changing the server port, require configurable options
+   - Solution:
+       - Integrated the `viper` library, which supports both `yaml` configuration files and environment variables with precedence handling
+
+### 1.5. Further Improvements (Suggestions) ###
+1. Move the frontend to a separate project, possibly using React or Angular
+2. Replace view controllers with REST controllers
+3. Add rate limiters to control the number of requests
+4. If the number of analyzers grows, process them in batches when a set limit is exceeded
+5. Allow the backend to enable or disable specific analyzers through configuration
+6. Update the UI and APIs to let users choose which analyzers to run
+
+### 1.6. Concerns and Assumptions  ###
+1. Hidden heading tags (`<h1>`, `<h2>`, etc.) and link tags (`<a>`) are treated as valid since handling all edge cases is complex
+2. Some login forms, especially Ajax-based logins, may not use standard `<form>` tags, so they are not detected
+3. Hidden forms (`<form>`) with proper login fields are still considered valid login forms
+4. `vipe` library gives higher priority to environment variables over configuration files by default
+
+
+# 2. Setup the Project #
+### 2.1 Prerequisites ###
 - Go 1.23.6 or above
 
-### 1.2. Setup and Run ###
+### 2.2. Setup and Run ###
 **Step 1**: Clone the Repository
 ```
   git clone https://github.com/sura2k/go-web-analyzer.git`
@@ -24,7 +133,7 @@ Note: The following external dependencies will be installed:
   - `github.com/spf13/viper v1.19.0` – Configuration management with support for `yaml`, `toml`, etc and `environment variables`
   - `github.com/stretchr/testify v1.10.0` – Testing utilities for assertions
 
-**Step 3**: Set Up Configuration (Optional)
+**Step 3**: Setup Configuration (Optional)
 1. Copy `config.yaml` from the root of `go-web-analyzer` to a preferred external location
 2. Create an environment variable named `CONFIG_PATH` and set its value to the directory containing `config.yaml`
 3. Modify the properties in `config.yaml` inside `CONFIG_PATH` directory as needed
@@ -57,109 +166,34 @@ If the application starts successfully, you should see the following logs in the
 
 Open your browser and navigate to: `http://localhost:8080`
 
-![image](https://github.com/user-attachments/assets/fd78fbeb-fc40-4f9c-867b-ce8aba369675)
+![image](https://github.com/user-attachments/assets/61830fbb-4aa7-43af-9efd-176b671ab972)
 
 **Step 7**: Submit a URL for Analysis
 
-![image](https://github.com/user-attachments/assets/2653ec05-8d32-404b-8d37-acba852954bd)
+![image](https://github.com/user-attachments/assets/ff5ab3f3-c115-4b91-ab66-f438a12c208d)
 
 You will see logs in your console as in shown below:
 ![image](https://github.com/user-attachments/assets/59c3c51e-b8b4-4e8f-baa4-992f3fb0a912)
 
 **Step 8**: View Analyzed Results
 
-![image](https://github.com/user-attachments/assets/eb98b0e0-cf6a-4a06-977f-860f6d42f49d)
+![image](https://github.com/user-attachments/assets/68209fd3-e6cb-4cf6-b144-feab38d082e4)
 
 *Note: If you notice or encountered that some of the accessible links are returned as not-accessible, try to increase the http time out via `defaults.http.timeout.seconds` configuration property.*
 
-### 1.3. Changing Configurations ###
+### 2.3. Changing Configurations ###
 
 If you need to change certain configuration properties, make sure to update them in `config.yaml` located in `CONFIG_PATH` directory and restart the application
 
-### 1.4. Run Unit Tests ###
+### 2.4. Run Unit Tests ###
 ```
   cd go-web-analyzer
   go test ./... -cover
 ```
 
-### 1.5. Code Coverage ###
+### 2.5. Code Coverage ###
+
 ![image](https://github.com/user-attachments/assets/1e203aab-f635-48d1-8fe7-8029da840215)
-
-
-# 2. Design Overview #
-### 2.1. Project Structure ###
-```
-/
-  ├── config/                 - Contains structs and functions for managing application configuration 
-  ├── controllers/            - Contains all controller-related functions           
-  │    └── rest/              - Contains REST controllers (Note: No REST controllers at the moment) 
-  │    └── view/              - Contains view controllers for rendering UI  
-  ├── services/               - Handles business logic and core functionalities
-  │    └── analyzers/         - Implements analyzers and related functions 
-  │    └── utils/             - Provides shared utility and helper functions 
-  ├── templates/              - Stores HTML view templates 
-  │
-  └── main.go                 - Entry point of the application 
-  └── config.yaml             - A reference-only configuration file
-```
-
-### 2.3. Key Components ###
-1. `/main.go` - Application entry point
-2. `/controller/view/view_controller.go` - View Controller handles page's GET and submit POST requests
-3. `/services/analyzers/analyzer_manager.go` - Act as the analyzer workflow orchestrator
-4. `/services/analyzers/analyzer_preprocessor.go` - A Preprocessor which validates input, fetch html content and transform, etc. Invoked by the analyzer_manager
-5. `/services/analyzers/analyzer_executor.go` - Executor all the analyzers parallaly. Invoked by the analyzer_manager
-6. `/services/analyzers/*_analyzer.go` - All the available analyzer implementations
-
-### 2.3. System Design ###
-![LucyTech_Analyzer drawio](https://github.com/user-attachments/assets/bebb87b6-1af5-4695-b7f9-3cb201d24f4b)
-
-![Untitled](https://github.com/user-attachments/assets/e95b43a4-84b4-41c4-a3c8-3c64336a4318)
-
-
-### 2.4. Challenges & Solutions (Already Adressed) ###
-*1. Analyzer execution*
-   - Problem:
-       - When analyzers run sequentially, the process takes significantly longer as it is a blocking operation
-   - Solution
-       - Run all analyzers in parallel using goroutines
-   
-*2. Improved Link Accessibility Checks in `LinksAnalyzer`*
-   - Problem:
-       - When `LinksAnalyzer` checks the accessibility of multiple `<a href="...">` links in the document, execution time increases as the number of links grows
-   - Solution 1:
-       - Execute link accessibility checks in parallel using goroutines
-   - Problem with Solution 1:
-       - If too many links are processed simultaneously, high CPU/RAM usage may lead to system crashes
-   - Solution 2:
-       - Process links in batches. Each batch runs in parallel, and the next batch starts after the previous one completes
-       - The default batch size is 10 and can be adjusted using the configuration property `analyzers.LinksAnalyzer.link-health-check.batch_size`
-   
-*3. Enhanced HTML Content Fetching from URLs*
-   - Problem:
-       - Go's default `http.Get()` fetches only the initial HTML content, often **before JavaScript execution** or **before a proxy processes the request**. As a result, the fetched HTML may not match what is displayed in a browser.
-   - Solution:
-       - Use `chromedp`, a JavaScript-enabled headless browser library, to fetch the complete HTML after JavaScript has fully loaded
-
-*4. Configuration Management*
-   - Problem:
-       - Some environment-specific settings, such as changing the server port, require configurable options
-   - Solution:
-       - Integrated the `viper` library, which supports both `yaml` configuration files and environment variables with precedence handling
-
-### 2.5. Further Improvements (Suggestions) ###
-1. Move the frontend to a separate project, possibly using React or Angular
-2. Replace view controllers with REST controllers
-3. Add rate limiters to control the number of requests
-4. If the number of analyzers grows, process them in batches when a set limit is exceeded
-5. Allow the backend to enable or disable specific analyzers through configuration
-6. Update the UI and APIs to let users choose which analyzers to run
-
-### 2.6. Concerns and Assumptions  ###
-1. Hidden heading tags (`<h1>`, `<h2>`, etc.) and link tags (`<a>`) are treated as valid since handling all edge cases is complex
-2. Some login forms, especially Ajax-based logins, may not use standard `<form>` tags, so they are not detected
-3. Hidden forms (`<form>`) with proper login fields are still considered valid login forms
-4. `vipe` library gives higher priority to environment variables over configuration files by default
 
 -----------------------------------------------------------------------
 
@@ -205,14 +239,14 @@ If you need to change certain configuration properties, make sure to update them
 - Provide a simple command or script to build and run the project. `[SKIPPED]`
 
 #### 3.4.2. Dockerization: ####
-- Only if you have knowledge with Docker `[SKIP]`
-- Include a Dockerfile for containerization. `[SKIP]`
+- Only if you have knowledge with Docker `[SKIPPED]`
+- Include a Dockerfile for containerization. `[SKIPPED]`
 - Optionally, provide a docker-compose.yml file for complex setups. `[SKIPPED]`
 
 #### 3.4.3. CI/CD Flow: ####
-- Only if you have knowledge with CI CD `[SKIP]`
+- Only if you have knowledge with CI CD `[SKIPPED]`
 - Implement basic CI/CD processes (e.g., GitHub Actions, CircleCI). `[SKIPPED]`
-- Set up automated builds, tests, and deployments. `[SKIP]`
+- Set up automated builds, tests, and deployments. `[SKIPPED]`
 
 #### 3.4.4. Environment Configuration: ####
 - Use environment variables or configuration files to manage settings. `[DONE]`
